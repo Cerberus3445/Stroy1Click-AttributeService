@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: Attribute-Service
+  cache:
+    type: redis
+    cache-names: redis-cache
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    open-in-view: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/stroy1click
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+  messages:
+    basename: messages
+    encoding: UTF-8
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 900MB
+
+logging:
+  file:
+    path: logs
+
+redisson:
+  host: localhost
+  port: 6379
+
+server:
+  port: 4040
+
+resilience4j:
+  ratelimiter:
+    instances:
+      attributeLimiter:
+        limit-for-period: 30
+        limit-refresh-period: 1s
+      productTypeAttributeLimiter:
+        limit-for-period: 30
+        limit-refresh-period: 1s
+      productAttributeLimiter:
+        limit-for-period: 30
+        limit-refresh-period: 1s
