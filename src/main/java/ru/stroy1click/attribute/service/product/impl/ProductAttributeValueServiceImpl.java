@@ -9,11 +9,15 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.stroy1click.attribute.cache.CacheClear;
+import ru.stroy1click.attribute.client.ProductClient;
+import ru.stroy1click.attribute.dto.AttributeDto;
 import ru.stroy1click.attribute.dto.ProductAttributeValueDto;
+import ru.stroy1click.attribute.entity.Attribute;
 import ru.stroy1click.attribute.entity.ProductAttributeValue;
 import ru.stroy1click.attribute.exception.NotFoundException;
 import ru.stroy1click.attribute.mapper.ProductAttributeValueMapper;
 import ru.stroy1click.attribute.repository.ProductAttributeValueRepository;
+import ru.stroy1click.attribute.service.attribute.AttributeService;
 import ru.stroy1click.attribute.service.product.ProductAttributeValueService;
 
 import java.util.List;
@@ -33,6 +37,10 @@ public class ProductAttributeValueServiceImpl implements ProductAttributeValueSe
     private final ProductAttributeValueMapper mapper;
 
     private final CacheClear cacheClear;
+
+    private final AttributeService attributeService;
+
+    private final ProductClient productClient;
 
     @Override
     @Cacheable(cacheNames = "productAttributeValue", key = "#id")
@@ -69,6 +77,11 @@ public class ProductAttributeValueServiceImpl implements ProductAttributeValueSe
     @CacheEvict(cacheNames = "allProductAttributeValuesByProductId", key = "#productTypeAttributeValueDto.productId")
     public void create(ProductAttributeValueDto productTypeAttributeValueDto) {
         log.info("create {}", productTypeAttributeValueDto);
+
+        //Проверка на существование атрибута и продукта
+        this.attributeService.get(productTypeAttributeValueDto.getAttributeId());
+        this.productClient.get(productTypeAttributeValueDto.getProductId());
+
         this.productAttributeValueRepository.save(
                 this.mapper.toEntity(productTypeAttributeValueDto)
         );

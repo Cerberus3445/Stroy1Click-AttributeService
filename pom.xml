@@ -32,6 +32,7 @@
         <springdoc.version>2.8.2</springdoc.version>
         <resilience4j.version>2.3.0</resilience4j.version>
         <redisson.version>3.36.0</redisson.version>
+        <otel.version>2.22.0</otel.version>
     </properties>
     <dependencies>
         <dependency>
@@ -114,7 +115,24 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>io.opentelemetry.instrumentation</groupId>
+            <artifactId>opentelemetry-spring-boot-starter</artifactId>
+            <version>${otel.version}</version>
+        </dependency>
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.opentelemetry.instrumentation</groupId>
+                <artifactId>opentelemetry-instrumentation-bom</artifactId>
+                <version>${otel.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>

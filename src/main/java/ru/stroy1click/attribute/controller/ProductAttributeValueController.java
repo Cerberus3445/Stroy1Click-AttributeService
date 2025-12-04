@@ -14,6 +14,7 @@ import ru.stroy1click.attribute.exception.ValidationException;
 import ru.stroy1click.attribute.service.product.ProductAttributeValueService;
 import ru.stroy1click.attribute.util.ValidationErrorUtils;
 
+import java.util.List;
 import java.util.Locale;
 
 @RestController
@@ -31,6 +32,12 @@ public class ProductAttributeValueController {
     @Operation(summary = "Получение значения атрибута продукта")
     public ResponseEntity<ProductAttributeValueDto> get(@PathVariable("id") Integer id){
         return ResponseEntity.ok(this.productAttributeValueService.get(id));
+    }
+
+    @GetMapping("/{id}/attribute-values")
+    @Operation(summary = "Получить значение атрибутов продукта")
+    public List<ProductAttributeValueDto> getAttributesValue(@PathVariable("id") Integer id){
+        return this.productAttributeValueService.getAllByProductId(id);
     }
 
     @PostMapping

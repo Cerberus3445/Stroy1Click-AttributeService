@@ -8,12 +8,16 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.MessageSource;
 import ru.stroy1click.attribute.cache.CacheClear;
+import ru.stroy1click.attribute.client.ProductClient;
+import ru.stroy1click.attribute.dto.AttributeDto;
 import ru.stroy1click.attribute.dto.ProductAttributeValueDto;
+import ru.stroy1click.attribute.dto.ProductDto;
 import ru.stroy1click.attribute.entity.Attribute;
 import ru.stroy1click.attribute.entity.ProductAttributeValue;
 import ru.stroy1click.attribute.exception.NotFoundException;
 import ru.stroy1click.attribute.mapper.ProductAttributeValueMapper;
 import ru.stroy1click.attribute.repository.ProductAttributeValueRepository;
+import ru.stroy1click.attribute.service.attribute.AttributeService;
 import ru.stroy1click.attribute.service.product.impl.ProductAttributeValueServiceImpl;
 
 import java.util.List;
@@ -37,13 +41,21 @@ class ProductAttributeValueTest {
     @Mock
     private CacheClear cacheClear;
 
+    @Mock
+    private AttributeService attributeService;
+
+    @Mock
+    private ProductClient productClient;
+
     @InjectMocks
     private ProductAttributeValueServiceImpl productAttributeValueService;
 
     private ProductAttributeValue productAttributeValue;
-    private ProductAttributeValueDto dto;
+    private ProductAttributeValueDto productAttributeValueDto;
     private Integer productId;
     private Attribute attribute;
+    private AttributeDto attributeDto;
+    private ProductDto productDto;
 
     @BeforeEach
     public void setUp() {
@@ -63,7 +75,28 @@ class ProductAttributeValueTest {
                 .value("Black")
                 .build();
 
-        this.dto = new ProductAttributeValueDto(1, 20, 10, "Black");
+        this.attributeDto = AttributeDto.builder()
+                .id(20)
+                .title("Color")
+                .build();
+
+        this.productDto = ProductDto.builder()
+                .id(10)
+                .title("Title")
+                .description("Description")
+                .inStock(true)
+                .price(999.99)
+                .categoryId(1)
+                .subcategoryId(1)
+                .productTypeId(1)
+                .build();
+
+        this.productAttributeValueDto = ProductAttributeValueDto.builder()
+                .id(1)
+                .attributeId(20)
+                .productId(10)
+                .value("Black")
+                .build();
 
         when(this.messageSource.getMessage(anyString(), any(), any(Locale.class)))
                 .thenReturn("Product attribute value not found");
@@ -72,7 +105,7 @@ class ProductAttributeValueTest {
     @Test
     public void get_ShouldReturnDto_WhenExists() {
         when(this.productAttributeValueRepository.findById(1)).thenReturn(Optional.of(this.productAttributeValue));
-        when(this.mapper.toDto(this.productAttributeValue)).thenReturn(this.dto);
+        when(this.mapper.toDto(this.productAttributeValue)).thenReturn(this.productAttributeValueDto);
 
         ProductAttributeValueDto result = this.productAttributeValueService.get(1);
 
@@ -97,7 +130,7 @@ class ProductAttributeValueTest {
     public void getAllByProductId_ShouldReturnList_WhenValuesExist() {
         when(this.productAttributeValueRepository.findByProductId(10))
                 .thenReturn(List.of(this.productAttributeValue));
-        when(this.mapper.toDto(this.productAttributeValue)).thenReturn(this.dto);
+        when(this.mapper.toDto(this.productAttributeValue)).thenReturn(this.productAttributeValueDto);
 
         List<ProductAttributeValueDto> result = this.productAttributeValueService.getAllByProductId(10);
 
@@ -140,14 +173,47 @@ class ProductAttributeValueTest {
     }
 
     @Test
-    public void create_ShouldSaveEntity_WhenDtoIsValid() {
+    public void create_ShouldSaveEntity_WhenDtoIsValid() { //TODO тесты на несуществующие атрибуты и продукты
         ProductAttributeValue entity = this.productAttributeValue;
-        when(this.mapper.toEntity(this.dto)).thenReturn(entity);
+        when(this.mapper.toEntity(this.productAttributeValueDto)).thenReturn(entity);
+        when(this.attributeService.get(this.productAttributeValueDto.getAttributeId()))
+                .thenReturn(this.attributeDto);
+        when(this.productClient.get(this.productAttributeValueDto.getProductId())).thenReturn(this.productDto);
 
-        this.productAttributeValueService.create(this.dto);
+        this.productAttributeValueService.create(this.productAttributeValueDto);
 
-        verify(this.mapper).toEntity(this.dto);
+        verify(this.mapper).toEntity(this.productAttributeValueDto);
         verify(this.productAttributeValueRepository).save(entity);
+        verify(this.attributeService).get(this.productAttributeValueDto.getAttributeId());
+        verify(this.productClient).get(this.productAttributeValueDto.getProductId());
+    }
+
+    @Test
+    public void create_ShouldThrowNotFoundException_WhenAttributeNotExists(){
+        ProductAttributeValue entity = this.productAttributeValue;
+        when(this.mapper.toEntity(this.productAttributeValueDto)).thenReturn(entity);
+        when(this.attributeService.get(this.productAttributeValueDto.getAttributeId()))
+                .thenThrow(new NotFoundException("Атрибут не найден"));
+
+        NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> {
+            this.productAttributeValueService.create(this.productAttributeValueDto);
+        });
+
+        assertEquals("Атрибут не найден", notFoundException.getMessage());
+    }
+
+    @Test
+    public void create_ShouldThrowNotFoundException_WhenProductNotExists(){
+        ProductAttributeValue entity = this.productAttributeValue;
+        when(this.mapper.toEntity(this.productAttributeValueDto)).thenReturn(entity);
+        when(this.productClient.get(this.productAttributeValueDto.getProductId()))
+                .thenThrow(new NotFoundException("Продукт не найден"));
+
+        NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> {
+            this.productAttributeValueService.create(this.productAttributeValueDto);
+        });
+
+        assertEquals("Продукт не найден", notFoundException.getMessage());
     }
 
     @Test
