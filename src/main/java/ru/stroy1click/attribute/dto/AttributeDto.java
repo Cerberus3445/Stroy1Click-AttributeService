@@ -2,6 +2,7 @@ package ru.stroy1click.attribute.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -9,6 +10,7 @@ import org.hibernate.validator.constraints.Length;
 import java.io.Serializable;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class AttributeDto implements Serializable {

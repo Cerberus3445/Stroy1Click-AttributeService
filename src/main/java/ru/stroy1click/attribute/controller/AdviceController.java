@@ -1,5 +1,6 @@
 package ru.stroy1click.attribute.controller;
 
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -7,9 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.stroy1click.attribute.exception.AlreadyExistsException;
-import ru.stroy1click.attribute.exception.NotFoundException;
-import ru.stroy1click.attribute.exception.ValidationException;
+import ru.stroy1click.attribute.exception.*;
 
 import java.util.Locale;
 
@@ -72,11 +71,65 @@ public class AdviceController {
         );
         problemDetail.setDetail(
                 this.messageSource.getMessage(
-                        "error.details.too_many_requests",
+                        "error.description.too_many_requests",
                         null,
                         Locale.getDefault()
                 )
         );
         return problemDetail;
     }
+    @ExceptionHandler(CallNotPermittedException.class)
+    public ProblemDetail handleException(CallNotPermittedException exception){
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                this.messageSource.getMessage(
+                        "error.description.service_unavailable",
+                        null,
+                        Locale.getDefault()
+                )
+        );
+        problemDetail.setTitle(this.messageSource.getMessage(
+                "error.title.service_unavailable",
+                null,
+                Locale.getDefault()
+        ));
+        return problemDetail;
+    }
+
+    @ExceptionHandler(ServiceUnavailableException.class)
+    public ProblemDetail handleException(ServiceUnavailableException exception){
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                this.messageSource.getMessage(
+                        "error.description.service_unavailable",
+                        null,
+                        Locale.getDefault()
+                )
+        );
+        problemDetail.setTitle(this.messageSource.getMessage(
+                "error.title.service_unavailable",
+                null,
+                Locale.getDefault()
+        ));
+        return problemDetail;
+    }
+
+    @ExceptionHandler(ServerErrorResponseException.class)
+    public ProblemDetail handleException(ServerErrorResponseException exception){
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                this.messageSource.getMessage(
+                        "error.description.service_unavailable",
+                        null,
+                        Locale.getDefault()
+                )
+        );
+        problemDetail.setTitle(this.messageSource.getMessage(
+                "error.title.service_unavailable",
+                null,
+                Locale.getDefault()
+        ));
+        return problemDetail;
+    }
+
 }

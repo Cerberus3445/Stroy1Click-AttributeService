@@ -8,12 +8,16 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.MessageSource;
 import ru.stroy1click.attribute.cache.CacheClear;
+import ru.stroy1click.attribute.client.ProductTypeClient;
+import ru.stroy1click.attribute.dto.AttributeDto;
 import ru.stroy1click.attribute.dto.ProductTypeAttributeValueDto;
+import ru.stroy1click.attribute.dto.ProductTypeDto;
 import ru.stroy1click.attribute.entity.Attribute;
 import ru.stroy1click.attribute.entity.ProductTypeAttributeValue;
 import ru.stroy1click.attribute.exception.NotFoundException;
 import ru.stroy1click.attribute.mapper.ProductTypeAttributeValueMapper;
 import ru.stroy1click.attribute.repository.ProductTypeAttributeValueRepository;
+import ru.stroy1click.attribute.service.attribute.AttributeService;
 import ru.stroy1click.attribute.service.product.type.impl.ProductTypeAttributeValueServiceImpl;
 
 import java.util.List;
@@ -37,12 +41,21 @@ class ProductTypeAttributeValueTest {
     @Mock
     private CacheClear cacheClear;
 
+    @Mock
+    private AttributeService attributeService;
+
+    @Mock
+    private ProductTypeClient productTypeClient;
+
     @InjectMocks
     private ProductTypeAttributeValueServiceImpl productTypeAttributeValueService;
 
     private ProductTypeAttributeValue entity;
     private ProductTypeAttributeValueDto dto;
     private Integer productTypeId;
+    private Attribute attribute;
+    private AttributeDto attributeDto;
+    private ProductTypeDto productTypeDto;
 
     @BeforeEach
     public void setUp() {
@@ -50,20 +63,32 @@ class ProductTypeAttributeValueTest {
 
         this.productTypeId = 10;
 
-        Attribute attribute = Attribute.builder()
-                .id(5)
+        this.attribute = Attribute.builder()
+                .id(20)
                 .title("Color")
+                .build();
+
+        this.attributeDto = AttributeDto.builder()
+                .id(20)
+                .title("Color")
+                .build();
+
+        this.productTypeDto = ProductTypeDto.builder()
+                .id(10)
+                .title("Product Type")
+                .image("link")
+                .subcategoryId(10)
                 .build();
 
         this.entity = ProductTypeAttributeValue.builder()
                 .id(1)
                 .value("White")
-                .attribute(attribute)
+                .attribute(this.attribute)
                 .productTypeId(10)
                 .build();
 
         this.dto = new ProductTypeAttributeValueDto(
-                1, attribute.getId(), this.productTypeId, "White"
+                1, this.attribute.getId(), this.productTypeId, "White"
         );
 
         when(this.messageSource.getMessage(anyString(), any(), any()))
@@ -152,11 +177,43 @@ class ProductTypeAttributeValueTest {
     @Test
     public void create_ShouldSaveEntity_WhenDtoIsValid() {
         when(this.mapper.toEntity(this.dto)).thenReturn(this.entity);
+        when(this.attributeService.get(this.dto.getAttributeId())).thenReturn(this.attributeDto);
+        when(this.productTypeClient.get(this.dto.getProductTypeId())).thenReturn(this.productTypeDto);
 
         this.productTypeAttributeValueService.create(this.dto);
 
         verify(this.mapper).toEntity(this.dto);
         verify(this.productTypeAttributeValueRepository).save(this.entity);
+        verify(this.attributeService).get(this.dto.getAttributeId());
+        verify(this.productTypeClient).get(this.dto.getProductTypeId());
+    }
+
+    @Test
+    public void create_ShouldThrowNotFountException_WhenAttributeNotExists() {
+        when(this.mapper.toEntity(this.dto)).thenReturn(this.entity);
+        when(this.attributeService.get(this.dto.getAttributeId())).thenThrow(
+                new NotFoundException("Атрибут не найден")
+        );
+
+        NotFoundException notFoundException = assertThrows(
+                NotFoundException.class, () -> this.productTypeAttributeValueService.create(this.dto)
+        );
+
+        assertEquals("Атрибут не найден", notFoundException.getMessage());
+    }
+
+    @Test
+    public void create_ShouldThrowNotFountException_WhenProductTypeNotExists() {
+        when(this.mapper.toEntity(this.dto)).thenReturn(this.entity);
+        when(this.productTypeClient.get(this.dto.getProductTypeId())).thenThrow(
+                new NotFoundException("Тип продукта не найден")
+        );
+
+        NotFoundException notFoundException = assertThrows(
+                NotFoundException.class, () -> this.productTypeAttributeValueService.create(this.dto)
+        );
+
+        assertEquals("Тип продукта не найден", notFoundException.getMessage());
     }
 
     @Test
@@ -225,7 +282,7 @@ class ProductTypeAttributeValueTest {
         ProductTypeAttributeValue saved = captor.getValue();
         assertEquals("Red", saved.getValue());
         assertEquals(10, saved.getProductTypeId());
-        assertEquals(5, saved.getAttribute().getId());
+        assertEquals(20, saved.getAttribute().getId());
     }
 
     @Test

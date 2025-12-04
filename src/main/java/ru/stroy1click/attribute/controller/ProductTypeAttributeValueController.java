@@ -9,11 +9,13 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.stroy1click.attribute.dto.ProductAttributeValueDto;
 import ru.stroy1click.attribute.dto.ProductTypeAttributeValueDto;
 import ru.stroy1click.attribute.exception.ValidationException;
 import ru.stroy1click.attribute.service.product.type.ProductTypeAttributeValueService;
 import ru.stroy1click.attribute.util.ValidationErrorUtils;
 
+import java.util.List;
 import java.util.Locale;
 
 @RestController
@@ -31,6 +33,12 @@ public class ProductTypeAttributeValueController {
     @Operation(summary = "Получение значения атрибута типа продукта")
     public ResponseEntity<ProductTypeAttributeValueDto> get(@PathVariable("id") Integer id){
         return ResponseEntity.ok(this.productTypeAttributeValueService.get(id));
+    }
+
+    @GetMapping("/{id}/attribute-values")
+    @Operation(summary = "Получить значение атрибутов типа продукта")
+    public List<ProductTypeAttributeValueDto> getAttributesValue(@PathVariable("id") Integer id){
+        return this.productTypeAttributeValueService.getAllByProductId(id);
     }
 
     @PostMapping

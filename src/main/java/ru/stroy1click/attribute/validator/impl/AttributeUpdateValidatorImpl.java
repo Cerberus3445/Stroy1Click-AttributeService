@@ -1,4 +1,4 @@
-package ru.stroy1click.attribute.validator.attribute.impl;
+package ru.stroy1click.attribute.validator.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +8,7 @@ import ru.stroy1click.attribute.dto.AttributeDto;
 import ru.stroy1click.attribute.entity.Attribute;
 import ru.stroy1click.attribute.exception.AlreadyExistsException;
 import ru.stroy1click.attribute.service.attribute.AttributeService;
-import ru.stroy1click.attribute.validator.attribute.AttributeUpdateValidator;
+import ru.stroy1click.attribute.validator.AttributeUpdateValidator;
 
 import java.util.Locale;
 import java.util.Objects;
