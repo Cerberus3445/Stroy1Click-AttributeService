@@ -54,6 +54,7 @@ public class ProductTypeClientImpl implements ProductTypeClient {
                     })
                     .body(ProductTypeDto.class);
         }  catch (ResourceAccessException e){
+            log.error("get error ", e);
             throw new ServiceUnavailableException();
         }
     }

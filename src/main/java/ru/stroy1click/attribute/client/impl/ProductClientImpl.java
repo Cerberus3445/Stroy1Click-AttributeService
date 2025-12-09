@@ -51,6 +51,7 @@ public class ProductClientImpl implements ProductClient {
                     })
                     .body(ProductDto.class);
         } catch (ResourceAccessException e){
+            log.error("get error ", e);
             throw new ServiceUnavailableException();
         }
     }
