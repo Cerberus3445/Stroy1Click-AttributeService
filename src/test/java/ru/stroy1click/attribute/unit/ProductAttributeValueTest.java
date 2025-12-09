@@ -173,7 +173,7 @@ class ProductAttributeValueTest {
     }
 
     @Test
-    public void create_ShouldSaveEntity_WhenDtoIsValid() { //TODO тесты на несуществующие атрибуты и продукты
+    public void create_ShouldSaveEntity_WhenDtoIsValid() {
         ProductAttributeValue entity = this.productAttributeValue;
         when(this.mapper.toEntity(this.productAttributeValueDto)).thenReturn(entity);
         when(this.attributeService.get(this.productAttributeValueDto.getAttributeId()))

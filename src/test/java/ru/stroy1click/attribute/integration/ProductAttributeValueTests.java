@@ -2,6 +2,7 @@ package ru.stroy1click.attribute.integration;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -10,7 +11,13 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import ru.stroy1click.attribute.client.ProductClient;
 import ru.stroy1click.attribute.dto.ProductAttributeValueDto;
+import ru.stroy1click.attribute.dto.ProductDto;
+
+import static org.mockito.Mockito.when;
+
 
 @Import({TestcontainersConfiguration.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -18,6 +25,9 @@ public class ProductAttributeValueTests {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
+
+    @MockitoBean
+    private ProductClient productClient;
 
     @Test
     public void get_ShouldReturnProductAttributeValue_WhenValueExists() {
@@ -29,6 +39,8 @@ public class ProductAttributeValueTests {
 
     @Test
     public void create_ShouldCreateProductAttributeValue_WhenDtoIsValid() {
+        when(this.productClient.get(1)).thenReturn(new ProductDto());
+
         ProductAttributeValueDto dto = new ProductAttributeValueDto(null, 1, 1, "Blue");
         ResponseEntity<String> response = this.testRestTemplate.postForEntity("/api/v1/product-attribute-values", dto, String.class);
 
