@@ -17,8 +17,8 @@ import ru.stroy1click.attribute.entity.ProductAttributeValue;
 import ru.stroy1click.attribute.exception.NotFoundException;
 import ru.stroy1click.attribute.mapper.ProductAttributeValueMapper;
 import ru.stroy1click.attribute.repository.ProductAttributeValueRepository;
-import ru.stroy1click.attribute.service.attribute.AttributeService;
-import ru.stroy1click.attribute.service.product.impl.ProductAttributeValueServiceImpl;
+import ru.stroy1click.attribute.service.AttributeService;
+import ru.stroy1click.attribute.service.impl.ProductAttributeValueServiceImpl;
 
 import java.util.List;
 import java.util.Locale;

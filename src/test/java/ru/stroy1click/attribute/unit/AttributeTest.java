@@ -12,7 +12,7 @@ import ru.stroy1click.attribute.entity.Attribute;
 import ru.stroy1click.attribute.exception.NotFoundException;
 import ru.stroy1click.attribute.mapper.AttributeMapper;
 import ru.stroy1click.attribute.repository.AttributeRepository;
-import ru.stroy1click.attribute.service.attribute.impl.AttributeServiceImpl;
+import ru.stroy1click.attribute.service.impl.AttributeServiceImpl;
 
 import java.util.Locale;
 import java.util.Optional;

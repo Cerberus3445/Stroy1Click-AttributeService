@@ -1,8 +1,7 @@
-package ru.stroy1click.attribute.service.product;
+package ru.stroy1click.attribute.service;
 
 import ru.stroy1click.attribute.dto.ProductAttributeValueDto;
 import ru.stroy1click.attribute.entity.ProductAttributeValue;
-import ru.stroy1click.attribute.service.BaseService;
 
 import java.util.List;
 import java.util.Optional;

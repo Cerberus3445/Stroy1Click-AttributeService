@@ -1,4 +1,4 @@
-package ru.stroy1click.attribute.service.product.type.impl;
+package ru.stroy1click.attribute.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +15,8 @@ import ru.stroy1click.attribute.entity.ProductTypeAttributeValue;
 import ru.stroy1click.attribute.exception.NotFoundException;
 import ru.stroy1click.attribute.mapper.ProductTypeAttributeValueMapper;
 import ru.stroy1click.attribute.repository.ProductTypeAttributeValueRepository;
-import ru.stroy1click.attribute.service.attribute.AttributeService;
-import ru.stroy1click.attribute.service.product.type.ProductTypeAttributeValueService;
+import ru.stroy1click.attribute.service.AttributeService;
+import ru.stroy1click.attribute.service.ProductTypeAttributeValueService;
 
 import java.util.List;
 import java.util.Locale;
