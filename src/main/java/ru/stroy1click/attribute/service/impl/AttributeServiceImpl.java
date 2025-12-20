@@ -1,4 +1,4 @@
-package ru.stroy1click.attribute.service.attribute.impl;
+package ru.stroy1click.attribute.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import ru.stroy1click.attribute.entity.Attribute;
 import ru.stroy1click.attribute.exception.NotFoundException;
 import ru.stroy1click.attribute.mapper.AttributeMapper;
 import ru.stroy1click.attribute.repository.AttributeRepository;
-import ru.stroy1click.attribute.service.attribute.AttributeService;
+import ru.stroy1click.attribute.service.AttributeService;
 
 import java.util.Locale;
 import java.util.Optional;

@@ -6,7 +6,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import ru.stroy1click.attribute.dto.AttributeDto;
 import ru.stroy1click.attribute.exception.AlreadyExistsException;
-import ru.stroy1click.attribute.service.attribute.AttributeService;
+import ru.stroy1click.attribute.service.AttributeService;
 import ru.stroy1click.attribute.validator.AttributeCreateValidator;
 
 import java.util.Locale;

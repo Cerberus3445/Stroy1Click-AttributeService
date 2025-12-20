@@ -1,4 +1,4 @@
-package ru.stroy1click.attribute.service.product.impl;
+package ru.stroy1click.attribute.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,15 +10,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.stroy1click.attribute.cache.CacheClear;
 import ru.stroy1click.attribute.client.ProductClient;
-import ru.stroy1click.attribute.dto.AttributeDto;
 import ru.stroy1click.attribute.dto.ProductAttributeValueDto;
-import ru.stroy1click.attribute.entity.Attribute;
 import ru.stroy1click.attribute.entity.ProductAttributeValue;
 import ru.stroy1click.attribute.exception.NotFoundException;
 import ru.stroy1click.attribute.mapper.ProductAttributeValueMapper;
 import ru.stroy1click.attribute.repository.ProductAttributeValueRepository;
-import ru.stroy1click.attribute.service.attribute.AttributeService;
-import ru.stroy1click.attribute.service.product.ProductAttributeValueService;
+import ru.stroy1click.attribute.service.AttributeService;
+import ru.stroy1click.attribute.service.ProductAttributeValueService;
 
 import java.util.List;
 import java.util.Locale;
@@ -92,6 +90,8 @@ public class ProductAttributeValueServiceImpl implements ProductAttributeValueSe
     @CacheEvict(value = "productAttributeValue", key = "#id")
     public void delete(Integer id) {
         log.info("delete {}", id);
+
+        //TODO убрать разбиение на модули в пакете service
         ProductAttributeValue productAttributeValue = this.productAttributeValueRepository.findById(id).orElseThrow(
                 () -> new NotFoundException(
                         this.messageSource.getMessage(
