@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.MessageSource;
 import ru.stroy1click.attribute.cache.CacheClear;
-import ru.stroy1click.attribute.client.ProductClient;
 import ru.stroy1click.attribute.dto.AttributeDto;
 import ru.stroy1click.attribute.dto.ProductAttributeValueDto;
 import ru.stroy1click.attribute.dto.ProductDto;
@@ -43,9 +42,6 @@ class ProductAttributeValueTest {
 
     @Mock
     private AttributeService attributeService;
-
-    @Mock
-    private ProductClient productClient;
 
     @InjectMocks
     private ProductAttributeValueServiceImpl productAttributeValueService;
@@ -178,14 +174,12 @@ class ProductAttributeValueTest {
         when(this.mapper.toEntity(this.productAttributeValueDto)).thenReturn(entity);
         when(this.attributeService.get(this.productAttributeValueDto.getAttributeId()))
                 .thenReturn(this.attributeDto);
-        when(this.productClient.get(this.productAttributeValueDto.getProductId())).thenReturn(this.productDto);
 
         this.productAttributeValueService.create(this.productAttributeValueDto);
 
         verify(this.mapper).toEntity(this.productAttributeValueDto);
         verify(this.productAttributeValueRepository).save(entity);
         verify(this.attributeService).get(this.productAttributeValueDto.getAttributeId());
-        verify(this.productClient).get(this.productAttributeValueDto.getProductId());
     }
 
     @Test
@@ -200,20 +194,6 @@ class ProductAttributeValueTest {
         });
 
         assertEquals("Атрибут не найден", notFoundException.getMessage());
-    }
-
-    @Test
-    public void create_ShouldThrowNotFoundException_WhenProductNotExists(){
-        ProductAttributeValue entity = this.productAttributeValue;
-        when(this.mapper.toEntity(this.productAttributeValueDto)).thenReturn(entity);
-        when(this.productClient.get(this.productAttributeValueDto.getProductId()))
-                .thenThrow(new NotFoundException("Продукт не найден"));
-
-        NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> {
-            this.productAttributeValueService.create(this.productAttributeValueDto);
-        });
-
-        assertEquals("Продукт не найден", notFoundException.getMessage());
     }
 
     @Test
@@ -234,7 +214,7 @@ class ProductAttributeValueTest {
 
         assertEquals("Product attribute value not found", exception.getMessage());
         verify(this.productAttributeValueRepository).findById(1);
-        verify(this.productAttributeValueRepository, never()).delete(any());
+        verify(this.productAttributeValueRepository, never()).delete(any(ProductAttributeValue.class));
         verify(this.cacheClear, never()).clearAllProductAttributeValuesByProductId(any());
     }
 

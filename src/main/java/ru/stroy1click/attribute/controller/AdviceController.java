@@ -46,7 +46,7 @@ public class AdviceController {
 
     @ExceptionHandler(AlreadyExistsException.class)
     public ProblemDetail problemDetail(AlreadyExistsException exception){
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_GATEWAY, exception.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, exception.getMessage());
         problemDetail.setTitle(
                 this.messageSource.getMessage(
                         "error.title.already_exist",
@@ -71,65 +71,11 @@ public class AdviceController {
         );
         problemDetail.setDetail(
                 this.messageSource.getMessage(
-                        "error.description.too_many_requests",
+                        "error.details.too_many_requests",
                         null,
                         Locale.getDefault()
                 )
         );
         return problemDetail;
     }
-    @ExceptionHandler(CallNotPermittedException.class)
-    public ProblemDetail handleException(CallNotPermittedException exception){
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.SERVICE_UNAVAILABLE,
-                this.messageSource.getMessage(
-                        "error.description.service_unavailable",
-                        null,
-                        Locale.getDefault()
-                )
-        );
-        problemDetail.setTitle(this.messageSource.getMessage(
-                "error.title.service_unavailable",
-                null,
-                Locale.getDefault()
-        ));
-        return problemDetail;
-    }
-
-    @ExceptionHandler(ServiceUnavailableException.class)
-    public ProblemDetail handleException(ServiceUnavailableException exception){
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.SERVICE_UNAVAILABLE,
-                this.messageSource.getMessage(
-                        "error.description.service_unavailable",
-                        null,
-                        Locale.getDefault()
-                )
-        );
-        problemDetail.setTitle(this.messageSource.getMessage(
-                "error.title.service_unavailable",
-                null,
-                Locale.getDefault()
-        ));
-        return problemDetail;
-    }
-
-    @ExceptionHandler(ServerErrorResponseException.class)
-    public ProblemDetail handleException(ServerErrorResponseException exception){
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                this.messageSource.getMessage(
-                        "error.description.service_unavailable",
-                        null,
-                        Locale.getDefault()
-                )
-        );
-        problemDetail.setTitle(this.messageSource.getMessage(
-                "error.title.service_unavailable",
-                null,
-                Locale.getDefault()
-        ));
-        return problemDetail;
-    }
-
 }

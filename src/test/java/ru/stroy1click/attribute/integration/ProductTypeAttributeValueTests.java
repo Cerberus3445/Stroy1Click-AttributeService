@@ -2,7 +2,6 @@ package ru.stroy1click.attribute.integration;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -11,8 +10,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import ru.stroy1click.attribute.client.ProductTypeClient;
 import ru.stroy1click.attribute.dto.ProductTypeAttributeValueDto;
 import ru.stroy1click.attribute.dto.ProductTypeDto;
 
@@ -25,9 +22,6 @@ class ProductTypeAttributeValueTests {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
-    @MockitoBean
-    private ProductTypeClient productTypeClient;
-
     @Test
     public void get_ShouldReturnProductTypeAttributeValue_WhenValueExists() {
         ResponseEntity<ProductTypeAttributeValueDto> response = this.testRestTemplate
@@ -39,8 +33,6 @@ class ProductTypeAttributeValueTests {
 
     @Test
     public void create_ShouldCreateProductTypeAttributeValue_WhenDtoIsValid() {
-        when(this.productTypeClient.get(1)).thenReturn(new ProductTypeDto());
-
         ProductTypeAttributeValueDto dto = new ProductTypeAttributeValueDto(null, 1, 1, "Color");
         ResponseEntity<String> response = this.testRestTemplate
                 .postForEntity("/api/v1/product-type-attribute-values", dto, String.class);
