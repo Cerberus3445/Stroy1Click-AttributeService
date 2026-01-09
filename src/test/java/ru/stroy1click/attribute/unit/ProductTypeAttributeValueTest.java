@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.MessageSource;
 import ru.stroy1click.attribute.cache.CacheClear;
-import ru.stroy1click.attribute.client.ProductTypeClient;
 import ru.stroy1click.attribute.dto.AttributeDto;
 import ru.stroy1click.attribute.dto.ProductTypeAttributeValueDto;
 import ru.stroy1click.attribute.dto.ProductTypeDto;
@@ -43,9 +42,6 @@ class ProductTypeAttributeValueTest {
 
     @Mock
     private AttributeService attributeService;
-
-    @Mock
-    private ProductTypeClient productTypeClient;
 
     @InjectMocks
     private ProductTypeAttributeValueServiceImpl productTypeAttributeValueService;
@@ -178,14 +174,12 @@ class ProductTypeAttributeValueTest {
     public void create_ShouldSaveEntity_WhenDtoIsValid() {
         when(this.mapper.toEntity(this.dto)).thenReturn(this.entity);
         when(this.attributeService.get(this.dto.getAttributeId())).thenReturn(this.attributeDto);
-        when(this.productTypeClient.get(this.dto.getProductTypeId())).thenReturn(this.productTypeDto);
 
         this.productTypeAttributeValueService.create(this.dto);
 
         verify(this.mapper).toEntity(this.dto);
         verify(this.productTypeAttributeValueRepository).save(this.entity);
         verify(this.attributeService).get(this.dto.getAttributeId());
-        verify(this.productTypeClient).get(this.dto.getProductTypeId());
     }
 
     @Test
@@ -200,20 +194,6 @@ class ProductTypeAttributeValueTest {
         );
 
         assertEquals("Атрибут не найден", notFoundException.getMessage());
-    }
-
-    @Test
-    public void create_ShouldThrowNotFountException_WhenProductTypeNotExists() {
-        when(this.mapper.toEntity(this.dto)).thenReturn(this.entity);
-        when(this.productTypeClient.get(this.dto.getProductTypeId())).thenThrow(
-                new NotFoundException("Тип продукта не найден")
-        );
-
-        NotFoundException notFoundException = assertThrows(
-                NotFoundException.class, () -> this.productTypeAttributeValueService.create(this.dto)
-        );
-
-        assertEquals("Тип продукта не найден", notFoundException.getMessage());
     }
 
     @Test

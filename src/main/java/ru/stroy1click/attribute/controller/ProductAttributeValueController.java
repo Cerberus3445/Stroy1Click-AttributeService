@@ -6,11 +6,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.stroy1click.attribute.dto.ProductAttributeValueDto;
 import ru.stroy1click.attribute.exception.ValidationException;
+import ru.stroy1click.attribute.model.ProductAttributeValueFilter;
 import ru.stroy1click.attribute.service.ProductAttributeValueService;
 import ru.stroy1click.attribute.util.ValidationErrorUtils;
 
@@ -32,6 +36,19 @@ public class ProductAttributeValueController {
     @Operation(summary = "Получение значения атрибута продукта")
     public ResponseEntity<ProductAttributeValueDto> get(@PathVariable("id") Integer id){
         return ResponseEntity.ok(this.productAttributeValueService.get(id));
+    }
+
+    @GetMapping("/products")
+    public Page<ProductAttributeValueDto> getProductIdsByAttributes(@RequestParam(value = "page", defaultValue = "0") Integer page,
+                                                                          @RequestParam(value = "size", defaultValue = "20") Integer size,
+                                                                          @RequestBody @Valid ProductAttributeValueFilter filter,
+                                                                          BindingResult bindingResult) {
+        if(bindingResult.hasErrors()) throw new ValidationException(ValidationErrorUtils.collectErrorsToString(
+                bindingResult.getFieldErrors()
+        ));
+
+        return this.productAttributeValueService.getProductIdsByAttributes(filter,
+                PageRequest.of(page, size));
     }
 
     @GetMapping("/{id}/attribute-values")

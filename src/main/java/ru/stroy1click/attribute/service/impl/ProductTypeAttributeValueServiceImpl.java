@@ -9,7 +9,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.stroy1click.attribute.cache.CacheClear;
-import ru.stroy1click.attribute.client.ProductTypeClient;
 import ru.stroy1click.attribute.dto.ProductTypeAttributeValueDto;
 import ru.stroy1click.attribute.entity.ProductTypeAttributeValue;
 import ru.stroy1click.attribute.exception.NotFoundException;
@@ -37,8 +36,6 @@ public class ProductTypeAttributeValueServiceImpl implements ProductTypeAttribut
     private final CacheClear cacheClear;
 
     private final AttributeService attributeService;
-
-    private final ProductTypeClient productTypeClient;
 
     @Override
     @Cacheable(cacheNames = "productTypeAttributeValue", key = "#id")
@@ -76,9 +73,8 @@ public class ProductTypeAttributeValueServiceImpl implements ProductTypeAttribut
     public void create(ProductTypeAttributeValueDto productTypeAttributeValueDto) {
         log.info("create {}", productTypeAttributeValueDto);
 
-        //Проверка на существование атрибута и продукта
+        //Проверка на существование атрибута
         this.attributeService.get(productTypeAttributeValueDto.getAttributeId());
-        this.productTypeClient.get(productTypeAttributeValueDto.getProductTypeId());
 
         this.productTypeAttributeValueRepository.save(
                 this.mapper.toEntity(productTypeAttributeValueDto)
