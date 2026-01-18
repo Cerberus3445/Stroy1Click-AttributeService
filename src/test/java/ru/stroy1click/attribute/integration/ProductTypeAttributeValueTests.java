@@ -11,9 +11,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import ru.stroy1click.attribute.dto.ProductTypeAttributeValueDto;
-import ru.stroy1click.attribute.dto.ProductTypeDto;
-
-import static org.mockito.Mockito.when;
 
 @Import({TestcontainersConfiguration.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -34,11 +31,12 @@ class ProductTypeAttributeValueTests {
     @Test
     public void create_ShouldCreateProductTypeAttributeValue_WhenDtoIsValid() {
         ProductTypeAttributeValueDto dto = new ProductTypeAttributeValueDto(null, 1, 1, "Color");
-        ResponseEntity<String> response = this.testRestTemplate
-                .postForEntity("/api/v1/product-type-attribute-values", dto, String.class);
+        ResponseEntity<ProductTypeAttributeValueDto> response = this.testRestTemplate
+                .postForEntity("/api/v1/product-type-attribute-values", dto, ProductTypeAttributeValueDto.class);
 
         Assertions.assertTrue(response.getStatusCode().is2xxSuccessful());
-        Assertions.assertEquals("Значение атрибута типа продукта создано", response.getBody());
+        Assertions.assertNotNull(response.getBody().getId());
+        Assertions.assertNotNull(response.getHeaders().getLocation());
     }
 
     @Test

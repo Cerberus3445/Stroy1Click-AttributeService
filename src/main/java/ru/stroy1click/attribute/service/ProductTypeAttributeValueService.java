@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ProductTypeAttributeValueService extends BaseService<Integer, ProductTypeAttributeValueDto> {
 
-    List<ProductTypeAttributeValueDto> getAllByProductId(Integer id);
+    List<ProductTypeAttributeValueDto> getAllByProductTypeId(Integer id);
 
     Optional<ProductTypeAttributeValue> getByValue(String value);
 }

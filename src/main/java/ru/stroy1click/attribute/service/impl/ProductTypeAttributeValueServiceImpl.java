@@ -31,7 +31,7 @@ public class ProductTypeAttributeValueServiceImpl implements ProductTypeAttribut
 
     private final MessageSource messageSource;
 
-    private final ProductTypeAttributeValueMapper mapper;
+    private final ProductTypeAttributeValueMapper productTypeAttributeValueMapper;
 
     private final CacheClear cacheClear;
 
@@ -41,10 +41,11 @@ public class ProductTypeAttributeValueServiceImpl implements ProductTypeAttribut
     @Cacheable(cacheNames = "productTypeAttributeValue", key = "#id")
     public ProductTypeAttributeValueDto get(Integer id) {
         log.info("get {}", id);
-        return this.mapper.toDto(this.productTypeAttributeValueRepository.findById(id).orElseThrow(
+
+        return this.productTypeAttributeValueMapper.toDto(this.productTypeAttributeValueRepository.findById(id).orElseThrow(
                 () -> new NotFoundException(
                         this.messageSource.getMessage(
-                                "error.product_attribute_value.not_found",
+                                "error.product_type_attribute_value.not_found",
                                 null,
                                 Locale.getDefault()
                         )
@@ -53,32 +54,36 @@ public class ProductTypeAttributeValueServiceImpl implements ProductTypeAttribut
     }
 
     @Override
-    @Cacheable(cacheNames = "allProductAttributeValuesByProductTypeId", key = "#id")
-    public List<ProductTypeAttributeValueDto> getAllByProductId(Integer id) {
-        log.info("getAllByProductId {}", id);
-         return this.productTypeAttributeValueRepository.findByProductTypeId(id).stream()
-                 .map(this.mapper::toDto)
+    @Cacheable(cacheNames = "allProductAttributeValuesByProductTypeId", key = "#productTypeId")
+    public List<ProductTypeAttributeValueDto> getAllByProductTypeId(Integer productTypeId) {
+        log.info("getAllByProductId {}", productTypeId);
+
+         return this.productTypeAttributeValueRepository.findByProductTypeId(productTypeId).stream()
+                 .map(this.productTypeAttributeValueMapper::toDto)
                  .toList();
     }
 
     @Override
     public Optional<ProductTypeAttributeValue> getByValue(String value) {
         log.info("getByValue {}", value);
+
         return this.productTypeAttributeValueRepository.findByValue(value);
     }
 
     @Override
     @Transactional
     @CacheEvict(cacheNames = "allProductAttributeValuesByProductTypeId", key = "#productTypeAttributeValueDto.productTypeId")
-    public void create(ProductTypeAttributeValueDto productTypeAttributeValueDto) {
+    public ProductTypeAttributeValueDto create(ProductTypeAttributeValueDto productTypeAttributeValueDto) {
         log.info("create {}", productTypeAttributeValueDto);
 
         //Проверка на существование атрибута
         this.attributeService.get(productTypeAttributeValueDto.getAttributeId());
 
-        this.productTypeAttributeValueRepository.save(
-                this.mapper.toEntity(productTypeAttributeValueDto)
+        ProductTypeAttributeValue createdProductTypeAttributeValue =  this.productTypeAttributeValueRepository.save(
+                this.productTypeAttributeValueMapper.toEntity(productTypeAttributeValueDto)
         );
+
+        return this.productTypeAttributeValueMapper.toDto(createdProductTypeAttributeValue);
     }
 
     @Override
@@ -86,10 +91,11 @@ public class ProductTypeAttributeValueServiceImpl implements ProductTypeAttribut
     @CacheEvict(value = "productTypeAttributeValue", key = "#id")
     public void delete(Integer id) {
         log.info("delete {}", id);
+
         ProductTypeAttributeValue productTypeAttributeValue = this.productTypeAttributeValueRepository.findById(id).orElseThrow(
                 () -> new NotFoundException(
                         this.messageSource.getMessage(
-                                "error.product_attribute_value.not_found",
+                                "error.product_type_attribute_value.not_found",
                                 null,
                                 Locale.getDefault()
                         )
@@ -108,6 +114,7 @@ public class ProductTypeAttributeValueServiceImpl implements ProductTypeAttribut
     })
     public void update(Integer id, ProductTypeAttributeValueDto productTypeAttributeValueDto) {
         log.info("update {}, {}", id, productTypeAttributeValueDto);
+
         this.productTypeAttributeValueRepository.findById(id).ifPresentOrElse(productAttributeValue -> {
             ProductTypeAttributeValue updatedProductTypeAttributeValue = ProductTypeAttributeValue.builder()
                     .id(id)
@@ -115,11 +122,12 @@ public class ProductTypeAttributeValueServiceImpl implements ProductTypeAttribut
                     .productTypeId(productAttributeValue.getProductTypeId())
                     .attribute(productAttributeValue.getAttribute())
                     .build();
+
             this.productTypeAttributeValueRepository.save(updatedProductTypeAttributeValue);
         }, () -> {
             throw new NotFoundException(
                     this.messageSource.getMessage(
-                            "error.product_attribute_value.not_found",
+                            "error.product_type_attribute_value.not_found",
                             null,
                             Locale.getDefault()
                     )

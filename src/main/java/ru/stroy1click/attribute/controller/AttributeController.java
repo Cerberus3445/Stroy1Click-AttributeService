@@ -10,12 +10,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.stroy1click.attribute.dto.AttributeDto;
+import ru.stroy1click.attribute.entity.Attribute;
 import ru.stroy1click.attribute.exception.ValidationException;
 import ru.stroy1click.attribute.service.AttributeService;
 import ru.stroy1click.attribute.util.ValidationErrorUtils;
 import ru.stroy1click.attribute.validator.AttributeCreateValidator;
 import ru.stroy1click.attribute.validator.AttributeUpdateValidator;
 
+import java.net.URI;
 import java.util.Locale;
 
 @RestController
@@ -41,7 +43,7 @@ public class AttributeController {
 
     @PostMapping
     @Operation(summary = "Создание атрибута")
-    public ResponseEntity<String> create(@RequestBody @Valid AttributeDto attributeDto,
+    public ResponseEntity<AttributeDto> create(@RequestBody @Valid AttributeDto attributeDto,
                                          BindingResult bindingResult){
         if(bindingResult.hasErrors()) throw new ValidationException(ValidationErrorUtils.collectErrorsToString(
                 bindingResult.getFieldErrors()
@@ -49,14 +51,11 @@ public class AttributeController {
 
         this.createValidator.validate(attributeDto);
 
-        this.attributeService.create(attributeDto);
-        return ResponseEntity.ok(
-                this.messageSource.getMessage(
-                        "info.attribute.create",
-                        null,
-                        Locale.getDefault()
-                )
-        );
+        AttributeDto createdAttribute = this.attributeService.create(attributeDto);
+
+        return ResponseEntity
+                .created(URI.create("/api/v1/attributes/"+ createdAttribute.getId()))
+                .body(createdAttribute);
     }
 
     @PatchMapping("/{id}")

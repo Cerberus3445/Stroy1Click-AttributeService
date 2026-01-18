@@ -62,8 +62,8 @@ resilience4j:
   ratelimiter:
     instances:
       attributeLimiter:
-        limit-for-period: 1
-        limit-refresh-period: 10s
+        limit-for-period: 100
+        limit-refresh-period: 1s
       productTypeAttributeLimiter:
         limit-for-period: 100
         limit-refresh-period: 1s

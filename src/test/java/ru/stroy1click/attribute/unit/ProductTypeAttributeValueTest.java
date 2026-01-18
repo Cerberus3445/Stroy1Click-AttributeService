@@ -10,7 +10,6 @@ import org.springframework.context.MessageSource;
 import ru.stroy1click.attribute.cache.CacheClear;
 import ru.stroy1click.attribute.dto.AttributeDto;
 import ru.stroy1click.attribute.dto.ProductTypeAttributeValueDto;
-import ru.stroy1click.attribute.dto.ProductTypeDto;
 import ru.stroy1click.attribute.entity.Attribute;
 import ru.stroy1click.attribute.entity.ProductTypeAttributeValue;
 import ru.stroy1click.attribute.exception.NotFoundException;
@@ -51,7 +50,6 @@ class ProductTypeAttributeValueTest {
     private Integer productTypeId;
     private Attribute attribute;
     private AttributeDto attributeDto;
-    private ProductTypeDto productTypeDto;
 
     @BeforeEach
     public void setUp() {
@@ -67,13 +65,6 @@ class ProductTypeAttributeValueTest {
         this.attributeDto = AttributeDto.builder()
                 .id(20)
                 .title("Color")
-                .build();
-
-        this.productTypeDto = ProductTypeDto.builder()
-                .id(10)
-                .title("Product Type")
-                .image("link")
-                .subcategoryId(10)
                 .build();
 
         this.entity = ProductTypeAttributeValue.builder()
@@ -124,7 +115,7 @@ class ProductTypeAttributeValueTest {
         when(this.mapper.toDto(this.entity)).thenReturn(this.dto);
 
         List<ProductTypeAttributeValueDto> result =
-                this.productTypeAttributeValueService.getAllByProductId(10);
+                this.productTypeAttributeValueService.getAllByProductTypeId(10);
 
         assertEquals(1, result.size());
         assertEquals(this.dto, result.get(0));
@@ -138,7 +129,7 @@ class ProductTypeAttributeValueTest {
                 .thenReturn(List.of());
 
         List<ProductTypeAttributeValueDto> result =
-                this.productTypeAttributeValueService.getAllByProductId(10);
+                this.productTypeAttributeValueService.getAllByProductTypeId(10);
 
         assertTrue(result.isEmpty());
         verify(this.productTypeAttributeValueRepository).findByProductTypeId(10);
