@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Table(schema = "attribute", name = "product_type_attribute_values")
 @Entity
@@ -20,9 +22,12 @@ public class ProductTypeAttributeValue {
 
     private String value;
 
+    private Integer productTypeId;
+
     @ManyToOne
     @JoinColumn(name = "attribute_id", referencedColumnName = "id")
     private Attribute attribute;
 
-    private Integer productTypeId;
+    @OneToMany(mappedBy = "productTypeAttributeValue")
+    private List<ProductAttribute> productAttributes;
 }

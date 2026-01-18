@@ -7,22 +7,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Table(schema = "attribute", name = "product_attribute_values")
+@Table(schema = "attribute", name = "product_attributes")
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductAttributeValue {
+public class ProductAttribute {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String value;
+    private Integer productId;
 
     @ManyToOne
-    @JoinColumn(name = "attribute_id", referencedColumnName = "id")
-    private Attribute attribute;
-
-    private Integer productId;
+    @JoinColumn(name = "product_type_attribute_value_id", referencedColumnName = "id")
+    private ProductTypeAttributeValue productTypeAttributeValue;
 }

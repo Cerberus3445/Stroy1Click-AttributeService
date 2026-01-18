@@ -25,7 +25,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     private final AttributeRepository attributeRepository;
 
-    private final AttributeMapper mapper;
+    private final AttributeMapper attributeMapper;
 
     private final MessageSource messageSource;
 
@@ -33,7 +33,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Cacheable(cacheNames = "attribute", key = "#id")
     public AttributeDto get(Integer id) {
         log.info("get {}", id);
-        return this.mapper.toDto(this.attributeRepository.findById(id)
+        return this.attributeMapper.toDto(this.attributeRepository.findById(id)
                 .orElseThrow(
                         () -> new NotFoundException(
                                 this.messageSource.getMessage(
@@ -47,11 +47,14 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     @Transactional
-    public void create(AttributeDto attributeDto) {
+    public AttributeDto create(AttributeDto attributeDto) {
         log.info("create {}", attributeDto);
-        this.attributeRepository.save(this.mapper.toEntity(
+
+        Attribute createdAttribute = this.attributeRepository.save(this.attributeMapper.toEntity(
                 attributeDto
         ));
+
+        return this.attributeMapper.toDto(createdAttribute);
     }
 
     @Override

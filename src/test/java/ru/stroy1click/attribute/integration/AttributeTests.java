@@ -34,12 +34,13 @@ public class AttributeTests  {
         AttributeDto dto = new AttributeDto(null, "Material");
         HttpEntity<AttributeDto> request = new HttpEntity<>(dto);
 
-        ResponseEntity<String> responseEntity = this.testRestTemplate.postForEntity(
-                "/api/v1/attributes", request, String.class
+        ResponseEntity<AttributeDto> responseEntity = this.testRestTemplate.postForEntity(
+                "/api/v1/attributes", request, AttributeDto.class
         );
 
         Assertions.assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
-        Assertions.assertEquals("Атрибут создан", responseEntity.getBody());
+        Assertions.assertEquals("Material", responseEntity.getBody().getTitle());
+        Assertions.assertNotNull(responseEntity.getHeaders().getLocation());
     }
 
     @Test

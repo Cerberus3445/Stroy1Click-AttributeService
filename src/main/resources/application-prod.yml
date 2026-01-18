@@ -30,10 +30,6 @@ spring:
       max-file-size: 100MB
       max-request-size: 900MB
 
-logging:
-  file:
-    path: logs
-
 redisson:
   host: localhost
   port: 6379

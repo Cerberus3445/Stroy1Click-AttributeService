@@ -43,4 +43,5 @@ class TestcontainersConfiguration {
         REDIS.stop();
         POSTGRES.stop();
     }
+
 }

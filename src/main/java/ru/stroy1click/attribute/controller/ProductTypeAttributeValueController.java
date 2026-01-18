@@ -14,6 +14,7 @@ import ru.stroy1click.attribute.exception.ValidationException;
 import ru.stroy1click.attribute.service.ProductTypeAttributeValueService;
 import ru.stroy1click.attribute.util.ValidationErrorUtils;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Locale;
 
@@ -34,28 +35,26 @@ public class ProductTypeAttributeValueController {
         return ResponseEntity.ok(this.productTypeAttributeValueService.get(id));
     }
 
-    @GetMapping("/{id}/attribute-values")
+    @GetMapping
     @Operation(summary = "Получить значение атрибутов типа продукта")
-    public List<ProductTypeAttributeValueDto> getAttributesValue(@PathVariable("id") Integer id){
-        return this.productTypeAttributeValueService.getAllByProductId(id);
+    public List<ProductTypeAttributeValueDto> getProductTypeAttributeValuesByProductTypeId(@RequestParam("productTypeId") Integer productTypeId){
+        return this.productTypeAttributeValueService.getAllByProductTypeId(productTypeId);
     }
 
     @PostMapping
     @Operation(summary = "Создание значения атрибута типа продукта")
-    public ResponseEntity<String> create(@RequestBody @Valid ProductTypeAttributeValueDto productTypeAttributeValueDto,
+    public ResponseEntity<ProductTypeAttributeValueDto> create(@RequestBody @Valid ProductTypeAttributeValueDto productTypeAttributeValueDto,
                                          BindingResult bindingResult){
         if(bindingResult.hasErrors()) throw new ValidationException(ValidationErrorUtils.collectErrorsToString(
                 bindingResult.getFieldErrors()
         ));
 
-        this.productTypeAttributeValueService.create(productTypeAttributeValueDto);
-        return ResponseEntity.ok(
-                this.messageSource.getMessage(
-                        "info.product_type_attribute_value.create",
-                        null,
-                        Locale.getDefault()
-                )
-        );
+        ProductTypeAttributeValueDto createdProductTypeAttributeValue =
+                this.productTypeAttributeValueService.create(productTypeAttributeValueDto);
+
+        return ResponseEntity
+                .created(URI.create("/api/v1/product-type-attribute-values/" + createdProductTypeAttributeValue.getId()))
+                .body(createdProductTypeAttributeValue);
     }
 
     @PatchMapping("/{id}")
