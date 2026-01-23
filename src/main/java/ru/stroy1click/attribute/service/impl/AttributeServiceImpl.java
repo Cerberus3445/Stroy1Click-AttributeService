@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import ru.stroy1click.attribute.mapper.AttributeMapper;
 import ru.stroy1click.attribute.repository.AttributeRepository;
 import ru.stroy1click.attribute.service.AttributeService;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -47,6 +49,7 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "allAttributes", allEntries = true)
     public AttributeDto create(AttributeDto attributeDto) {
         log.info("create {}", attributeDto);
 
@@ -59,7 +62,10 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     @Transactional
-    @CacheEvict(cacheNames = "attribute", key = "#id")
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "attribute", key = "#id"),
+            @CacheEvict(cacheNames = "allAttributes", allEntries = true)
+    })
     public void delete(Integer id) {
         log.info("delete {}", id);
         Attribute attribute = this.attributeRepository.findById(id)
@@ -78,14 +84,17 @@ public class AttributeServiceImpl implements AttributeService {
 
     @Override
     @Transactional
-    @CacheEvict(cacheNames = "attribute", key = "#id")
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "attribute", key = "#id"),
+            @CacheEvict(cacheNames = "allAttributes", allEntries = true)
+    })
     public void update(Integer id, AttributeDto attributeDto) {
         log.info("update {} {}", id, attributeDto);
         this.attributeRepository.findById(id).ifPresentOrElse(attribute -> {
             Attribute updatedAttribute = Attribute.builder()
                     .id(id)
                     .title(attributeDto.getTitle())
-                    .productTypeAttributeValues(attribute.getProductTypeAttributeValues())
+                    .attributeOptions(attribute.getAttributeOptions())
                     .build();
             this.attributeRepository.save(updatedAttribute);
         }, () -> {
@@ -98,6 +107,14 @@ public class AttributeServiceImpl implements AttributeService {
             );
         });
 
+    }
+
+    @Override
+    @Cacheable(value = "allAttributes")
+    public List<AttributeDto> getAll() {
+        return this.attributeMapper.toDto(
+                this.attributeRepository.findAll()
+        );
     }
 
     @Override

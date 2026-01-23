@@ -18,6 +18,7 @@ import ru.stroy1click.attribute.validator.AttributeCreateValidator;
 import ru.stroy1click.attribute.validator.AttributeUpdateValidator;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Locale;
 
 @RestController
@@ -37,8 +38,14 @@ public class AttributeController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Получение атрибута")
-    public ResponseEntity<AttributeDto> get(@PathVariable("id") Integer id){
-        return ResponseEntity.ok(this.attributeService.get(id));
+    public AttributeDto get(@PathVariable("id") Integer id){
+        return this.attributeService.get(id);
+    }
+
+    @GetMapping
+    @Operation(summary = "Получение всех атрибутов")
+    public List<AttributeDto> getAll(){
+        return this.attributeService.getAll();
     }
 
     @PostMapping

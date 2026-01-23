@@ -43,6 +43,9 @@ public class RedissonConfig {
         config.put("productAttributeValue", new CacheConfig(oneDayMillis, 0));
         config.put("allProductAttributeValuesByProductId", new CacheConfig(oneDayMillis, 0));
         config.put("attribute", new CacheConfig(oneDayMillis, 0));
+        config.put("allAttributes", new CacheConfig(oneDayMillis, 0));
+        config.put("allProductAttributeAssignments", new CacheConfig(oneDayMillis, 0));
+        config.put("allAttributeOptions", new CacheConfig(oneDayMillis, 0));
         config.put("attributesByProductType", new CacheConfig(oneDayMillis, 0));
 
         return new RedissonSpringCacheManager(redissonClient, config);

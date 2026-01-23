@@ -10,19 +10,19 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import ru.stroy1click.attribute.dto.ProductAttributeDto;
+import ru.stroy1click.attribute.dto.ProductAttributeAssignmentDto;
 
 
 @Import({TestcontainersConfiguration.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ProductAttributeTests {
+public class ProductAttributeAssignmentTests {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
 
     @Test
     public void get_ShouldReturnProductAttributeValue_WhenValueExists() {
-        ResponseEntity<ProductAttributeDto> response = this.testRestTemplate.getForEntity("/api/v1/product-attributes/1", ProductAttributeDto.class);
+        ResponseEntity<ProductAttributeAssignmentDto> response = this.testRestTemplate.getForEntity("/api/v1/product-attribute-assignments/1", ProductAttributeAssignmentDto.class);
 
         Assertions.assertTrue(response.getStatusCode().is2xxSuccessful());
         Assertions.assertEquals(1, response.getBody().getProductId());
@@ -30,9 +30,9 @@ public class ProductAttributeTests {
 
     @Test
     public void create_ShouldCreateProductAttributeValue_WhenDtoIsValid() {
-        ProductAttributeDto dto = new ProductAttributeDto(null,1,1);
-        ResponseEntity<ProductAttributeDto> response =
-                this.testRestTemplate.postForEntity("/api/v1/product-attributes", dto, ProductAttributeDto.class);
+        ProductAttributeAssignmentDto dto = new ProductAttributeAssignmentDto(null,1,1);
+        ResponseEntity<ProductAttributeAssignmentDto> response =
+                this.testRestTemplate.postForEntity("/api/v1/product-attribute-assignments", dto, ProductAttributeAssignmentDto.class);
 
         Assertions.assertTrue(response.getStatusCode().is2xxSuccessful());
         Assertions.assertNotNull(response.getBody().getId());
@@ -42,9 +42,9 @@ public class ProductAttributeTests {
 
     @Test
     public void update_ShouldUpdateProductAttributeValue_WhenDtoIsValid() {
-        ProductAttributeDto dto = new ProductAttributeDto(null,100,1);
+        ProductAttributeAssignmentDto dto = new ProductAttributeAssignmentDto(null,100,1);
         ResponseEntity<String> response = this.testRestTemplate.exchange(
-                "/api/v1/product-attributes/2",
+                "/api/v1/product-attribute-assignments/2",
                 HttpMethod.PATCH,
                 new HttpEntity<>(dto),
                 String.class
@@ -53,7 +53,7 @@ public class ProductAttributeTests {
         Assertions.assertTrue(response.getStatusCode().is2xxSuccessful());
         Assertions.assertEquals("Значение атрибута продукта обновлено", response.getBody());
 
-        ResponseEntity<ProductAttributeDto> getResponse = this.testRestTemplate.getForEntity("/api/v1/product-attributes/2", ProductAttributeDto.class);
+        ResponseEntity<ProductAttributeAssignmentDto> getResponse = this.testRestTemplate.getForEntity("/api/v1/product-attribute-assignments/2", ProductAttributeAssignmentDto.class);
         Assertions.assertEquals(dto.getProductId(), getResponse.getBody().getProductId());
     }
 
@@ -73,8 +73,8 @@ public class ProductAttributeTests {
     @Test
     public void createValidation_ShouldReturnError_WhenDtoIsInvalid() {
 
-        ProductAttributeDto invalidDto = new ProductAttributeDto(null, -11, 1);
-        ResponseEntity<ProblemDetail> response = this.testRestTemplate.postForEntity("/api/v1/product-attributes", invalidDto, ProblemDetail.class);
+        ProductAttributeAssignmentDto invalidDto = new ProductAttributeAssignmentDto(null, -11, 1);
+        ResponseEntity<ProblemDetail> response = this.testRestTemplate.postForEntity("/api/v1/product-attribute-assignments", invalidDto, ProblemDetail.class);
 
         Assertions.assertTrue(response.getStatusCode().is4xxClientError());
         Assertions.assertEquals("Ошибка валидации", response.getBody().getTitle());
@@ -82,9 +82,9 @@ public class ProductAttributeTests {
 
     @Test
     public void updateValidation_ShouldReturnError_WhenDtoIsInvalid() {
-        ProductAttributeDto invalidDto = new ProductAttributeDto(null, 1, -11);
+        ProductAttributeAssignmentDto invalidDto = new ProductAttributeAssignmentDto(null, 1, -11);
         ResponseEntity<ProblemDetail> response = this.testRestTemplate.exchange(
-                "/api/v1/product-attributes/1",
+                "/api/v1/product-attribute-assignments/1",
                 HttpMethod.PATCH,
                 new HttpEntity<>(invalidDto),
                 ProblemDetail.class
@@ -96,7 +96,7 @@ public class ProductAttributeTests {
 
     @Test
     public void get_ShouldReturnNotFound_WhenIdDoesNotExist() {
-        ResponseEntity<ProblemDetail> response = this.testRestTemplate.getForEntity("/api/v1/product-attributes/1000000", ProblemDetail.class);
+        ResponseEntity<ProblemDetail> response = this.testRestTemplate.getForEntity("/api/v1/product-attribute-assignments/1000000", ProblemDetail.class);
 
         Assertions.assertTrue(response.getStatusCode().is4xxClientError());
         Assertions.assertEquals("Значение атрибута типа продукта не найдено", response.getBody().getDetail());

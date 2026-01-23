@@ -63,9 +63,9 @@ resilience4j:
       attributeLimiter:
         limit-for-period: 30
         limit-refresh-period: 1s
-      productTypeAttributeLimiter:
+      attributeOptionLimiter:
         limit-for-period: 30
         limit-refresh-period: 1s
-      productAttributeLimiter:
+      productAttributeAssignmentLimiter:
         limit-for-period: 30
         limit-refresh-period: 1s

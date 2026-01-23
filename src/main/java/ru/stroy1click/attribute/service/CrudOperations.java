@@ -1,8 +1,12 @@
 package ru.stroy1click.attribute.service;
 
-public interface BaseService<ID, T> {
+import java.util.List;
+
+public interface CrudOperations<ID, T> {
 
     T get(ID id);
+
+    List<T> getAll();
 
     T create(T dto);
 

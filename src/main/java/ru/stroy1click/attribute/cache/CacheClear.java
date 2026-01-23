@@ -18,9 +18,9 @@ public class CacheClear {
         deleteCache("allProductAttributeValuesByProductId", productId);
     }
 
-    public void clearAllProductTypeAttributeValuesByProductTypeId(Integer productTypeId){
-        log.info("clearAllProductTypeAttributeValuesByProductTypeId {}", productTypeId);
-        deleteCache("allProductTypeAttributeValuesByProductTypeId", productTypeId);
+    public void clearAllAttributeOptionsByProductTypeId(Integer productTypeId){
+        log.info("clearAllAttributeOptionsByProductTypeId {}", productTypeId);
+        deleteCache("allAttributeOptionsByProductTypeId", productTypeId);
     }
 
     private void deleteCache(String key, Integer value){

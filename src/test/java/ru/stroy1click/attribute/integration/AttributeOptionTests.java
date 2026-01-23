@@ -10,19 +10,19 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import ru.stroy1click.attribute.dto.ProductTypeAttributeValueDto;
+import ru.stroy1click.attribute.dto.AttributeOptionDto;
 
 @Import({TestcontainersConfiguration.class})
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ProductTypeAttributeValueTests {
+class AttributeOptionTests {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
 
     @Test
     public void get_ShouldReturnProductTypeAttributeValue_WhenValueExists() {
-        ResponseEntity<ProductTypeAttributeValueDto> response = this.testRestTemplate
-                .getForEntity("/api/v1/product-type-attribute-values/1", ProductTypeAttributeValueDto.class);
+        ResponseEntity<AttributeOptionDto> response = this.testRestTemplate
+                .getForEntity("/api/v1/product-type-attribute-values/1", AttributeOptionDto.class);
 
         Assertions.assertTrue(response.getStatusCode().is2xxSuccessful());
         Assertions.assertEquals("Size", response.getBody().getValue());
@@ -30,9 +30,9 @@ class ProductTypeAttributeValueTests {
 
     @Test
     public void create_ShouldCreateProductTypeAttributeValue_WhenDtoIsValid() {
-        ProductTypeAttributeValueDto dto = new ProductTypeAttributeValueDto(null, 1, 1, "Color");
-        ResponseEntity<ProductTypeAttributeValueDto> response = this.testRestTemplate
-                .postForEntity("/api/v1/product-type-attribute-values", dto, ProductTypeAttributeValueDto.class);
+        AttributeOptionDto dto = new AttributeOptionDto(null, 1, 1, "Color");
+        ResponseEntity<AttributeOptionDto> response = this.testRestTemplate
+                .postForEntity("/api/v1/product-type-attribute-values", dto, AttributeOptionDto.class);
 
         Assertions.assertTrue(response.getStatusCode().is2xxSuccessful());
         Assertions.assertNotNull(response.getBody().getId());
@@ -41,7 +41,7 @@ class ProductTypeAttributeValueTests {
 
     @Test
     public void update_ShouldUpdateProductTypeAttributeValue_WhenDtoIsValid() {
-        ProductTypeAttributeValueDto dto = new ProductTypeAttributeValueDto(null, 1, 1, "Material");
+        AttributeOptionDto dto = new AttributeOptionDto(null, 1, 1, "Material");
         ResponseEntity<String> response = this.testRestTemplate.exchange(
                 "/api/v1/product-type-attribute-values/2",
                 HttpMethod.PATCH,
@@ -52,8 +52,8 @@ class ProductTypeAttributeValueTests {
         Assertions.assertTrue(response.getStatusCode().is2xxSuccessful());
         Assertions.assertEquals("Значение атрибута типа продукта обновлено", response.getBody());
 
-        ResponseEntity<ProductTypeAttributeValueDto> getResponse = this.testRestTemplate
-                .getForEntity("/api/v1/product-type-attribute-values/2", ProductTypeAttributeValueDto.class);
+        ResponseEntity<AttributeOptionDto> getResponse = this.testRestTemplate
+                .getForEntity("/api/v1/product-type-attribute-values/2", AttributeOptionDto.class);
         Assertions.assertEquals("Material", getResponse.getBody().getValue());
     }
 
@@ -72,7 +72,7 @@ class ProductTypeAttributeValueTests {
 
     @Test
     void createValidation_ShouldReturnError_WhenDtoIsInvalid() {
-        ProductTypeAttributeValueDto invalidDto = new ProductTypeAttributeValueDto(null, 1, 1, "x");
+        AttributeOptionDto invalidDto = new AttributeOptionDto(null, 1, 1, "x");
         ResponseEntity<ProblemDetail> response = this.testRestTemplate.postForEntity("/api/v1/product-type-attribute-values", invalidDto, ProblemDetail.class);
 
         Assertions.assertTrue(response.getStatusCode().is4xxClientError());
@@ -81,7 +81,7 @@ class ProductTypeAttributeValueTests {
 
     @Test
     void updateValidation_ShouldReturnError_WhenDtoIsInvalid() {
-        ProductTypeAttributeValueDto invalidDto = new ProductTypeAttributeValueDto(null, 1, 1, "");
+        AttributeOptionDto invalidDto = new AttributeOptionDto(null, 1, 1, "");
         ResponseEntity<ProblemDetail> response = this.testRestTemplate.exchange(
                 "/api/v1/product-type-attribute-values/1",
                 HttpMethod.PATCH,
