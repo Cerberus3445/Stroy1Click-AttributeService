@@ -5,19 +5,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
-import ru.stroy1click.attribute.entity.ProductAttribute;
+import ru.stroy1click.attribute.entity.ProductAttributeAssignment;
 import ru.stroy1click.attribute.model.ProductAttributeValueFilter;
 import ru.stroy1click.attribute.specification.ProductSpecification;
 
 import java.util.List;
 
 @Repository
-public interface ProductAttributeRepository extends JpaRepository<ProductAttribute, Integer>,
-        JpaSpecificationExecutor<ProductAttribute> {
+public interface ProductAttributeAssignmentRepository extends JpaRepository<ProductAttributeAssignment, Integer>,
+        JpaSpecificationExecutor<ProductAttributeAssignment> {
 
-    List<ProductAttribute> findByProductId(Integer productId);
+    List<ProductAttributeAssignment> findByProductId(Integer productId);
 
-    default Page<ProductAttribute> findProductIdsByAttributes(ProductAttributeValueFilter filter, Pageable pageable) {
+    default Page<ProductAttributeAssignment> findProductIdsByAttributes(ProductAttributeValueFilter filter, Pageable pageable) {
         return findAll(ProductSpecification.filterByAttributes(filter), pageable);
     }
 }

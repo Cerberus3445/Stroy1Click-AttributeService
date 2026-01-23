@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
-@Table(schema = "attribute", name = "product_type_attribute_values")
+@Table(schema = "attribute", name = "attribute_options")
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProductTypeAttributeValue {
+public class AttributeOption {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +28,6 @@ public class ProductTypeAttributeValue {
     @JoinColumn(name = "attribute_id", referencedColumnName = "id")
     private Attribute attribute;
 
-    @OneToMany(mappedBy = "productTypeAttributeValue")
-    private List<ProductAttribute> productAttributes;
+    @OneToMany(mappedBy = "attributeOption")
+    private List<ProductAttributeAssignment> productAttributeAssignments;
 }

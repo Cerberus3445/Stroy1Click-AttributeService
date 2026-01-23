@@ -9,9 +9,9 @@ import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.stroy1click.attribute.dto.ProductTypeAttributeValueDto;
+import ru.stroy1click.attribute.dto.AttributeOptionDto;
 import ru.stroy1click.attribute.exception.ValidationException;
-import ru.stroy1click.attribute.service.ProductTypeAttributeValueService;
+import ru.stroy1click.attribute.service.AttributeOptionService;
 import ru.stroy1click.attribute.util.ValidationErrorUtils;
 
 import java.net.URI;
@@ -20,53 +20,59 @@ import java.util.Locale;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/product-type-attribute-values")
+@RequestMapping("/api/v1/attribute-options")
 @Tag(name = "Product Type Attribute Controller", description = "Взаимодействие со значениями атрибута типа продукта")
-@RateLimiter(name = "productTypeAttributeLimiter")
-public class ProductTypeAttributeValueController {
+@RateLimiter(name = "attributeOptionLimiter")
+public class AttributeOptionController {
 
-    private final ProductTypeAttributeValueService productTypeAttributeValueService;
+    private final AttributeOptionService attributeOptionService;
 
     private final MessageSource messageSource;
 
     @GetMapping("/{id}")
     @Operation(summary = "Получение значения атрибута типа продукта")
-    public ResponseEntity<ProductTypeAttributeValueDto> get(@PathVariable("id") Integer id){
-        return ResponseEntity.ok(this.productTypeAttributeValueService.get(id));
+    public AttributeOptionDto get(@PathVariable("id") Integer id){
+        return this.attributeOptionService.get(id);
     }
 
     @GetMapping
-    @Operation(summary = "Получить значение атрибутов типа продукта")
-    public List<ProductTypeAttributeValueDto> getProductTypeAttributeValuesByProductTypeId(@RequestParam("productTypeId") Integer productTypeId){
-        return this.productTypeAttributeValueService.getAllByProductTypeId(productTypeId);
+    @Operation(summary = "Получение атрибутов (опционально по типу продукта)")
+    public List<AttributeOptionDto> getAll(
+            @RequestParam(required = false) Integer productTypeId
+    ) {
+        if (productTypeId == null) {
+            return attributeOptionService.getAll();
+        }
+        return attributeOptionService.getAllByProductTypeId(productTypeId);
     }
+
 
     @PostMapping
     @Operation(summary = "Создание значения атрибута типа продукта")
-    public ResponseEntity<ProductTypeAttributeValueDto> create(@RequestBody @Valid ProductTypeAttributeValueDto productTypeAttributeValueDto,
-                                         BindingResult bindingResult){
+    public ResponseEntity<AttributeOptionDto> create(@RequestBody @Valid AttributeOptionDto attributeOptionDto,
+                                                     BindingResult bindingResult){
         if(bindingResult.hasErrors()) throw new ValidationException(ValidationErrorUtils.collectErrorsToString(
                 bindingResult.getFieldErrors()
         ));
 
-        ProductTypeAttributeValueDto createdProductTypeAttributeValue =
-                this.productTypeAttributeValueService.create(productTypeAttributeValueDto);
+        AttributeOptionDto createdProductTypeAttributeValue =
+                this.attributeOptionService.create(attributeOptionDto);
 
         return ResponseEntity
-                .created(URI.create("/api/v1/product-type-attribute-values/" + createdProductTypeAttributeValue.getId()))
+                .created(URI.create("/api/v1/attribute-options/" + createdProductTypeAttributeValue.getId()))
                 .body(createdProductTypeAttributeValue);
     }
 
     @PatchMapping("/{id}")
     @Operation(summary = "Обновление значения атрибута типа продукта")
     public ResponseEntity<String> update(@PathVariable("id") Integer id,
-                                         @RequestBody @Valid ProductTypeAttributeValueDto productTypeAttributeValueDto,
+                                         @RequestBody @Valid AttributeOptionDto attributeOptionDto,
                                          BindingResult bindingResult){
         if(bindingResult.hasErrors()) throw new ValidationException(ValidationErrorUtils.collectErrorsToString(
                 bindingResult.getFieldErrors()
         ));
 
-        this.productTypeAttributeValueService.update(id, productTypeAttributeValueDto);
+        this.attributeOptionService.update(id, attributeOptionDto);
         return ResponseEntity.ok(
                 this.messageSource.getMessage(
                         "info.product_type_attribute_value.update",
@@ -79,7 +85,7 @@ public class ProductTypeAttributeValueController {
     @DeleteMapping("/{id}")
     @Operation(summary = "Удаление значения атрибута типа продукта")
     public ResponseEntity<String> delete(@PathVariable("id") Integer id){
-        this.productTypeAttributeValueService.delete(id);
+        this.attributeOptionService.delete(id);
         return ResponseEntity.ok(
                 this.messageSource.getMessage(
                         "info.product_type_attribute_value.delete",

@@ -23,5 +23,5 @@ public class Attribute {
     private String title;
 
     @OneToMany(mappedBy = "attribute")
-    private List<ProductTypeAttributeValue> productTypeAttributeValues;
+    private List<AttributeOption> attributeOptions;
 }
