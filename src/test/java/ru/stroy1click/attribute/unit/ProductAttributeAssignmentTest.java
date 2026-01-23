@@ -93,7 +93,7 @@ class ProductAttributeAssignmentTest {
 
         this.productAttributeAssignmentDto = ProductAttributeAssignmentDto.builder()
                 .id(1)
-                .productTypeAttributeValueId(1)
+                .attributeOptionId(1)
                 .productId(10)
                 .build();
 
@@ -152,21 +152,21 @@ class ProductAttributeAssignmentTest {
     public void create_ShouldSaveEntity_WhenDtoIsValid() {
         ru.stroy1click.attribute.entity.ProductAttributeAssignment entity = this.productAttributeAssignment;
         when(this.mapper.toEntity(this.productAttributeAssignmentDto)).thenReturn(entity);
-        when(this.attributeOptionService.get(this.productAttributeAssignmentDto.getProductTypeAttributeValueId()))
+        when(this.attributeOptionService.get(this.productAttributeAssignmentDto.getAttributeOptionId()))
                 .thenReturn(this.attributeOptionDto);
 
         this.productAttributeValueService.create(this.productAttributeAssignmentDto);
 
         verify(this.mapper).toEntity(this.productAttributeAssignmentDto);
         verify(this.productAttributeAssignmentRepository).save(entity);
-        verify(this.attributeOptionService).get(this.productAttributeAssignmentDto.getProductTypeAttributeValueId());
+        verify(this.attributeOptionService).get(this.productAttributeAssignmentDto.getAttributeOptionId());
     }
 
     @Test
     public void create_ShouldThrowNotFoundException_WhenAttributeNotExists(){
         ru.stroy1click.attribute.entity.ProductAttributeAssignment entity = this.productAttributeAssignment;
         when(this.mapper.toEntity(this.productAttributeAssignmentDto)).thenReturn(entity);
-        when(this.attributeOptionService.get(this.productAttributeAssignmentDto.getProductTypeAttributeValueId()))
+        when(this.attributeOptionService.get(this.productAttributeAssignmentDto.getAttributeOptionId()))
                 .thenThrow(new NotFoundException("Атрибут не найден"));
 
         NotFoundException notFoundException = assertThrows(NotFoundException.class, () -> {

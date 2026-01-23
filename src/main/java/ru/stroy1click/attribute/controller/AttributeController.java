@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.stroy1click.attribute.dto.AttributeDto;
-import ru.stroy1click.attribute.entity.Attribute;
 import ru.stroy1click.attribute.exception.ValidationException;
 import ru.stroy1click.attribute.service.AttributeService;
 import ru.stroy1click.attribute.util.ValidationErrorUtils;

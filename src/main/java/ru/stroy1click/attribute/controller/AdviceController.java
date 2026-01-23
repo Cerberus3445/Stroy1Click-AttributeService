@@ -1,6 +1,5 @@
 package ru.stroy1click.attribute.controller;
 
-import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
