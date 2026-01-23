@@ -35,8 +35,6 @@ redisson:
   host: localhost
   port: 6379
 
-url:
-  productService: http://localhost:7070
 
 server:
   port: 4040

@@ -22,7 +22,7 @@ class AttributeOptionTests {
     @Test
     public void get_ShouldReturnProductTypeAttributeValue_WhenValueExists() {
         ResponseEntity<AttributeOptionDto> response = this.testRestTemplate
-                .getForEntity("/api/v1/product-type-attribute-values/1", AttributeOptionDto.class);
+                .getForEntity("/api/v1/attribute-options/1", AttributeOptionDto.class);
 
         Assertions.assertTrue(response.getStatusCode().is2xxSuccessful());
         Assertions.assertEquals("Size", response.getBody().getValue());
@@ -32,7 +32,7 @@ class AttributeOptionTests {
     public void create_ShouldCreateProductTypeAttributeValue_WhenDtoIsValid() {
         AttributeOptionDto dto = new AttributeOptionDto(null, 1, 1, "Color");
         ResponseEntity<AttributeOptionDto> response = this.testRestTemplate
-                .postForEntity("/api/v1/product-type-attribute-values", dto, AttributeOptionDto.class);
+                .postForEntity("/api/v1/attribute-options", dto, AttributeOptionDto.class);
 
         Assertions.assertTrue(response.getStatusCode().is2xxSuccessful());
         Assertions.assertNotNull(response.getBody().getId());
@@ -43,7 +43,7 @@ class AttributeOptionTests {
     public void update_ShouldUpdateProductTypeAttributeValue_WhenDtoIsValid() {
         AttributeOptionDto dto = new AttributeOptionDto(null, 1, 1, "Material");
         ResponseEntity<String> response = this.testRestTemplate.exchange(
-                "/api/v1/product-type-attribute-values/2",
+                "/api/v1/attribute-options/2",
                 HttpMethod.PATCH,
                 new HttpEntity<>(dto),
                 String.class
@@ -53,14 +53,14 @@ class AttributeOptionTests {
         Assertions.assertEquals("Значение атрибута типа продукта обновлено", response.getBody());
 
         ResponseEntity<AttributeOptionDto> getResponse = this.testRestTemplate
-                .getForEntity("/api/v1/product-type-attribute-values/2", AttributeOptionDto.class);
+                .getForEntity("/api/v1/attribute-options/2", AttributeOptionDto.class);
         Assertions.assertEquals("Material", getResponse.getBody().getValue());
     }
 
     @Test
     void delete_ShouldDeleteProductTypeAttributeValue_WhenValueExists() {
         ResponseEntity<String> response = this.testRestTemplate.exchange(
-                "/api/v1/product-type-attribute-values/3",
+                "/api/v1/attribute-options/3",
                 HttpMethod.DELETE,
                 null,
                 String.class
@@ -73,7 +73,7 @@ class AttributeOptionTests {
     @Test
     void createValidation_ShouldReturnError_WhenDtoIsInvalid() {
         AttributeOptionDto invalidDto = new AttributeOptionDto(null, 1, 1, "x");
-        ResponseEntity<ProblemDetail> response = this.testRestTemplate.postForEntity("/api/v1/product-type-attribute-values", invalidDto, ProblemDetail.class);
+        ResponseEntity<ProblemDetail> response = this.testRestTemplate.postForEntity("/api/v1/attribute-options", invalidDto, ProblemDetail.class);
 
         Assertions.assertTrue(response.getStatusCode().is4xxClientError());
         Assertions.assertEquals("Ошибка валидации", response.getBody().getTitle());
@@ -83,7 +83,7 @@ class AttributeOptionTests {
     void updateValidation_ShouldReturnError_WhenDtoIsInvalid() {
         AttributeOptionDto invalidDto = new AttributeOptionDto(null, 1, 1, "");
         ResponseEntity<ProblemDetail> response = this.testRestTemplate.exchange(
-                "/api/v1/product-type-attribute-values/1",
+                "/api/v1/attribute-options/1",
                 HttpMethod.PATCH,
                 new HttpEntity<>(invalidDto),
                 ProblemDetail.class
@@ -96,10 +96,10 @@ class AttributeOptionTests {
     @Test
     void get_ShouldReturnNotFound_WhenIdDoesNotExist() {
         ResponseEntity<ProblemDetail> response = this.testRestTemplate
-                .getForEntity("/api/v1/product-type-attribute-values/1000000", ProblemDetail.class);
+                .getForEntity("/api/v1/attribute-options/1000000", ProblemDetail.class);
 
         Assertions.assertTrue(response.getStatusCode().is4xxClientError());
-        Assertions.assertEquals("Значение атрибута продукта не найдено", response.getBody().getDetail());
+        Assertions.assertEquals("Не найдено", response.getBody().getTitle());
     }
 }
 

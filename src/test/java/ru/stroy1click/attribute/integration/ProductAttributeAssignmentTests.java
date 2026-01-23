@@ -60,7 +60,7 @@ public class ProductAttributeAssignmentTests {
     @Test
     public void delete_ShouldDeleteProductAttributeValue_WhenValueExists() {
         ResponseEntity<String> response = this.testRestTemplate.exchange(
-                "/api/v1/product-attributes/3",
+                "/api/v1/product-attribute-assignments/3",
                 HttpMethod.DELETE,
                 null,
                 String.class
