@@ -33,6 +33,8 @@ spring:
 redisson:
   host: localhost
   port: 6379
+  username: default
+  password: password
 
 server:
   port: 4040
