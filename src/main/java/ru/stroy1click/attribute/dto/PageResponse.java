@@ -1,4 +1,4 @@
-package ru.stroy1click.attribute.model;
+package ru.stroy1click.attribute.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -6,7 +6,7 @@ import org.springframework.data.jpa.domain.Specification;
 import ru.stroy1click.attribute.entity.Attribute;
 import ru.stroy1click.attribute.entity.AttributeOption;
 import ru.stroy1click.attribute.entity.ProductAttributeAssignment;
-import ru.stroy1click.attribute.model.ProductAttributeValueFilter;
+import ru.stroy1click.attribute.dto.ProductAttributeValueFilter;
 
 import java.util.Map;
 
