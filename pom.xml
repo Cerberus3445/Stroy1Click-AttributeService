@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>ru.stroy1click</groupId>
-    <artifactId>AttributeService</artifactId>
+    <artifactId>attribute-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Stroy1Click - AttributeService</name>
-    <description>Stroy1Click - AttributeService</description>
+    <name>AttributeService</name>
+    <description>Сервис для работы с атрибутами</description>
     <url/>
     <licenses>
         <license/>

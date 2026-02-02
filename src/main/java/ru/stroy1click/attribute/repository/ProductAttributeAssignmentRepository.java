@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 import ru.stroy1click.attribute.entity.ProductAttributeAssignment;
-import ru.stroy1click.attribute.model.ProductAttributeValueFilter;
+import ru.stroy1click.attribute.dto.ProductAttributeValueFilter;
 import ru.stroy1click.attribute.specification.ProductSpecification;
 
 import java.util.List;
