@@ -5,13 +5,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import ru.stroy1click.attribute.dto.AttributeOptionDto;
 import ru.stroy1click.attribute.entity.AttributeOption;
+import ru.stroy1click.common.mapper.Mappable;
 
 
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class AttributeOptionMapper implements Mappable<AttributeOption, AttributeOptionDto>{
+public class AttributeOptionMapper implements Mappable<AttributeOption, AttributeOptionDto> {
 
     private final ModelMapper modelMapper;
 

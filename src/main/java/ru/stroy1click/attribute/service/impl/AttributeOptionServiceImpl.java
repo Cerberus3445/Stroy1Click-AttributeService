@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.stroy1click.attribute.cache.CacheClear;
 import ru.stroy1click.attribute.dto.AttributeOptionDto;
 import ru.stroy1click.attribute.entity.AttributeOption;
-import ru.stroy1click.attribute.exception.NotFoundException;
+import ru.stroy1click.common.exception.NotFoundException;
 import ru.stroy1click.attribute.mapper.AttributeOptionMapper;
 import ru.stroy1click.attribute.repository.AttributeOptionRepository;
 import ru.stroy1click.attribute.service.AttributeService;

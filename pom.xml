@@ -36,6 +36,7 @@
         <docker.image.prefix>stroy1click</docker.image.prefix>
         <docker.image.name>attribute</docker.image.name>
         <docker-maven-plugin.version>0.45.0</docker-maven-plugin.version>
+        <common.version>0.0.1-SNAPSHOT</common.version>
     </properties>
     <dependencies>
         <dependency>
@@ -86,6 +87,12 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.stroy1click</groupId>
+            <artifactId>common</artifactId>
+            <version>${common.version}</version>
         </dependency>
 
         <dependency>
@@ -181,7 +188,7 @@
                     <verbose>true</verbose>
                     <images>
                         <image>
-                            <name>${docker.image.prefix}/${docker.image.name}-arm</name>
+                            <name>${docker.image.prefix}/${docker.image.name}-arm64</name>
                             <build>
                                 <dockerFileDir>${project.basedir}</dockerFileDir>
                                 <assembly>

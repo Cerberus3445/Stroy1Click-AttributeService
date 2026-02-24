@@ -12,11 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.stroy1click.attribute.cache.CacheClear;
 import ru.stroy1click.attribute.dto.ProductAttributeAssignmentDto;
-import ru.stroy1click.attribute.exception.NotFoundException;
+import ru.stroy1click.attribute.mapper.ProductAttributeAssignmentMapper;
+import ru.stroy1click.common.exception.NotFoundException;
 import ru.stroy1click.attribute.dto.PageResponse;
 import ru.stroy1click.attribute.dto.ProductAttributeValueFilter;
 import ru.stroy1click.attribute.repository.ProductAttributeAssignmentRepository;
-import ru.stroy1click.attribute.service.ProductAttributeAssignment;
+import ru.stroy1click.attribute.service.ProductAttributeAssignmentService;
 import ru.stroy1click.attribute.service.AttributeOptionService;
 
 import java.util.List;
@@ -26,13 +27,13 @@ import java.util.Locale;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ProductAttributeAssignmentImpl implements ProductAttributeAssignment {
+public class ProductAttributeAssignmentServiceImpl implements ProductAttributeAssignmentService {
 
     private final ProductAttributeAssignmentRepository productAttributeAssignmentRepository;
 
     private final MessageSource messageSource;
 
-    private final ru.stroy1click.attribute.mapper.ProductAttributeAssignment productAttributeAssignment;
+    private final ProductAttributeAssignmentMapper productAttributeAssignment;
 
     private final CacheClear cacheClear;
 

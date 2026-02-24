@@ -23,7 +23,7 @@ public class ProductAttributeAssignmentDto implements Serializable {
     @Min(value = 1, message = "{validation.product_attribute_assignment_dto.product_id.min}")
     private Integer productId;
 
-    @NotNull(message = "{validation.product_attribute_assignment_dto.product_id.not_null}")
-    @Min(value = 1, message = "{validation.product_attribute_assignment_dto.product_id.min}")
+    @NotNull(message = "{validation.product_attribute_assignment_dto.attribute_option_id.not_null}")
+    @Min(value = 1, message = "{validation.product_attribute_assignment_dto.attribute_option_id.min}")
     private Integer attributeOptionId;
 }

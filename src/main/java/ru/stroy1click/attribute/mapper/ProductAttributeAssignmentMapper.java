@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import ru.stroy1click.attribute.dto.ProductAttributeAssignmentDto;
+import ru.stroy1click.attribute.entity.ProductAttributeAssignment;
+import ru.stroy1click.common.mapper.Mappable;
 
 import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class ProductAttributeAssignment implements Mappable<ru.stroy1click.attribute.entity.ProductAttributeAssignment, ProductAttributeAssignmentDto>{
+public class ProductAttributeAssignmentMapper implements Mappable<ProductAttributeAssignment, ProductAttributeAssignmentDto> {
 
     private final ModelMapper modelMapper;
 
