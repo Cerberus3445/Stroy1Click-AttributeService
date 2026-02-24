@@ -1,15 +1,16 @@
-package ru.stroy1click.attribute.unit;
+package ru.stroy1click.attribute.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
 import ru.stroy1click.attribute.dto.AttributeDto;
 import ru.stroy1click.attribute.entity.Attribute;
-import ru.stroy1click.attribute.exception.NotFoundException;
+import ru.stroy1click.common.exception.NotFoundException;
 import ru.stroy1click.attribute.mapper.AttributeMapper;
 import ru.stroy1click.attribute.repository.AttributeRepository;
 import ru.stroy1click.attribute.service.impl.AttributeServiceImpl;
@@ -20,7 +21,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class AttributeTest {
+@ExtendWith(MockitoExtension.class)
+class AttributeServiceTest {
 
     @InjectMocks
     private AttributeServiceImpl attributeService;
@@ -29,93 +31,111 @@ class AttributeTest {
     private AttributeRepository attributeRepository;
 
     @Mock
-    private AttributeMapper mapper;
+    private AttributeMapper attributeMapper;
 
     @Mock
     private MessageSource messageSource;
 
     private Attribute attribute;
+
     private AttributeDto attributeDto;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-
-        this.attribute = Attribute.builder()
+        attribute = Attribute.builder()
                 .id(1)
                 .title("Color")
                 .build();
 
-        this.attributeDto = new AttributeDto();
-        this.attributeDto.setTitle("Color");
-
-        when(this.messageSource.getMessage(anyString(), any(), any(Locale.class)))
-                .thenReturn("Attribute not found");
+        attributeDto = new AttributeDto();
+        attributeDto.setTitle("Color");
     }
 
     @Test
-    void get_ShouldReturnAttributeDto_WhenExists() {
-        when(this.attributeRepository.findById(1)).thenReturn(Optional.of(this.attribute));
-        when(this.mapper.toDto(this.attribute)).thenReturn(this.attributeDto);
+    void get_WhenAttributeExists_ShouldReturnAttributeDto() {
+        //Arrange
+        when(this.attributeRepository.findById(1)).thenReturn(Optional.of(attribute));
+        when(this.attributeMapper.toDto(attribute)).thenReturn(attributeDto);
 
+        //Act
         AttributeDto result = this.attributeService.get(1);
 
+        //Assert
         assertNotNull(result);
         assertEquals("Color", result.getTitle());
         verify(this.attributeRepository).findById(1);
-        verify(this.mapper).toDto(this.attribute);
+        verify(this.attributeMapper).toDto(attribute);
     }
 
     @Test
-    void get_ShouldThrowNotFoundException_WhenDoesNotExist() {
+    void get_WhenAttributeDoesNotExist_ShouldThrowNotFoundException() {
+        //Arrange
         when(this.attributeRepository.findById(1)).thenReturn(Optional.empty());
+        when(this.messageSource.getMessage(anyString(), any(), any(Locale.class)))
+                .thenReturn("Attribute not found");
 
+        //Act
         NotFoundException exception = assertThrows(NotFoundException.class, () -> this.attributeService.get(1));
+
+        //Assert
         assertEquals("Attribute not found", exception.getMessage());
         verify(this.attributeRepository).findById(1);
     }
 
     @Test
-    void create_ShouldCallMapperAndSave_WhenAttributeDtoProvided() {
+    void create_WhenValidDataProvided_ShouldSaveAndReturnCreated() {
+        //Arrange
         Attribute attributeToSave = Attribute.builder().title("Color").build();
-        when(this.mapper.toEntity(this.attributeDto)).thenReturn(attributeToSave);
+        when(this.attributeMapper.toEntity(attributeDto)).thenReturn(attributeToSave);
 
-        this.attributeService.create(this.attributeDto);
+        //Act
+        this.attributeService.create(attributeDto);
 
-        verify(this.mapper).toEntity(this.attributeDto);
+        //Assert
+        verify(this.attributeMapper).toEntity(attributeDto);
         verify(this.attributeRepository).save(attributeToSave);
     }
 
     @Test
-    void delete_ShouldDeleteAttribute_WhenExists() {
+    void delete_WhenAttributeExists_ShouldDeleteAttribute() {
+        //Arrange
         when(this.attributeRepository.findById(1)).thenReturn(Optional.of(this.attribute));
 
+        //Act
         this.attributeService.delete(1);
 
+        //Assert
         verify(this.attributeRepository).delete(this.attribute);
     }
 
     @Test
-    void delete_ShouldThrowNotFoundException_WhenDoesNotExist() {
+    void delete_WhenAttributeDoesNotExist_ShouldThrowNotFoundException() {
+        //Arrange
         when(this.attributeRepository.findById(1)).thenReturn(Optional.empty());
+        when(this.messageSource.getMessage(anyString(), any(), any(Locale.class)))
+                .thenReturn("Attribute not found");
 
+        //Act
         NotFoundException exception = assertThrows(NotFoundException.class, () -> this.attributeService.delete(1));
-        assertEquals("Attribute not found", exception.getMessage());
 
+        //Assert
+        assertEquals("Attribute not found", exception.getMessage());
         verify(this.attributeRepository).findById(1);
         verify(this.attributeRepository, never()).delete(any());
     }
 
     @Test
-    void update_ShouldUpdateAttribute_WhenExists() {
+    void update_WhenAttributeExists_ShouldUpdateAttribute() {
+        //Arrange
         Attribute existing = Attribute.builder().id(1).title("Old").build();
         AttributeDto dto = new AttributeDto();
         dto.setTitle("New");
-
         when(this.attributeRepository.findById(1)).thenReturn(Optional.of(existing));
 
+        //Act
         this.attributeService.update(1, dto);
 
+        //Assert
         ArgumentCaptor<Attribute> captor = ArgumentCaptor.forClass(Attribute.class);
         verify(this.attributeRepository).save(captor.capture());
         Attribute saved = captor.getValue();
@@ -124,36 +144,46 @@ class AttributeTest {
     }
 
     @Test
-    void update_ShouldThrowNotFoundException_WhenDoesNotExist() {
+    void update_WhenAttributeDoesNotExist_ShouldThrowNotFoundException() {
+        //Arrange
         AttributeDto dto = new AttributeDto();
         dto.setTitle("New");
-
         when(this.attributeRepository.findById(1)).thenReturn(Optional.empty());
+        when(this.messageSource.getMessage(anyString(), any(), any(Locale.class)))
+                .thenReturn("Attribute not found");
 
+        //Act
         NotFoundException exception = assertThrows(NotFoundException.class,
                 () -> this.attributeService.update(1, dto));
-        assertEquals("Attribute not found", exception.getMessage());
 
+        //Assert
+        assertEquals("Attribute not found", exception.getMessage());
         verify(this.attributeRepository).findById(1);
         verify(this.attributeRepository, never()).save(any());
     }
 
     @Test
-    void getByTitle_ShouldReturnOptionalAttribute_WhenExists() {
+    void getByTitle_WhenAttributeExists_ShouldReturnOptionalAttribute() {
+        //Arrange
         when(this.attributeRepository.findByTitle("Color")).thenReturn(Optional.of(this.attribute));
 
+        //Act
         Optional<Attribute> result = this.attributeService.getByTitle("Color");
 
+        //Assert
         assertTrue(result.isPresent());
         assertEquals(this.attribute, result.get());
     }
 
     @Test
-    void getByTitle_ShouldReturnEmptyOptional_WhenDoesNotExist() {
+    void getByTitle_WhenAttributeDoesNotExist_ShouldReturnEmptyOptional() {
+        //Arrange
         when(this.attributeRepository.findByTitle("NonExisting")).thenReturn(Optional.empty());
 
+        //Act
         Optional<Attribute> result = this.attributeService.getByTitle("NonExisting");
 
+        //Assert
         assertFalse(result.isPresent());
     }
 }

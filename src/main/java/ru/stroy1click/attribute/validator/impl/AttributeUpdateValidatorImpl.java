@@ -6,7 +6,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import ru.stroy1click.attribute.dto.AttributeDto;
 import ru.stroy1click.attribute.entity.Attribute;
-import ru.stroy1click.attribute.exception.AlreadyExistsException;
+import ru.stroy1click.common.exception.AlreadyExistsException;
 import ru.stroy1click.attribute.service.AttributeService;
 import ru.stroy1click.attribute.validator.AttributeUpdateValidator;
 
@@ -26,6 +26,7 @@ public class AttributeUpdateValidatorImpl implements AttributeUpdateValidator {
     @Override
     public void validate(AttributeDto dto) {
         log.info("validate {}", dto);
+
         Optional<Attribute> foundAttribute= this.attributeService.getByTitle(dto.getTitle());
 
         if(foundAttribute.isPresent() && !Objects.equals(dto.getId(), foundAttribute.get().getId())

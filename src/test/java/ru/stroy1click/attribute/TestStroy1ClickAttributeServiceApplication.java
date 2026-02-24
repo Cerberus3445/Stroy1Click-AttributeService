@@ -1,7 +1,7 @@
-package ru.stroy1click.attribute.integration;
+package ru.stroy1click.attribute;
 
 import org.springframework.boot.SpringApplication;
-import ru.stroy1click.attribute.Stroy1ClickAttributeServiceApplication;
+import ru.stroy1click.attribute.config.TestcontainersConfiguration;
 
 public class TestStroy1ClickAttributeServiceApplication {
 

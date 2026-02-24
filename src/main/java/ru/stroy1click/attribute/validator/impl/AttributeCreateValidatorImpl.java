@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import ru.stroy1click.attribute.dto.AttributeDto;
-import ru.stroy1click.attribute.exception.AlreadyExistsException;
+import ru.stroy1click.common.exception.AlreadyExistsException;
 import ru.stroy1click.attribute.service.AttributeService;
 import ru.stroy1click.attribute.validator.AttributeCreateValidator;
 
@@ -23,6 +23,7 @@ public class AttributeCreateValidatorImpl implements AttributeCreateValidator {
     @Override
     public void validate(AttributeDto attributeDto) {
         log.info("validate {}", attributeDto);
+
         if(this.attributeService.getByTitle(attributeDto.getTitle()).isPresent()){
             throw new AlreadyExistsException(
                     this.messageSource.getMessage(

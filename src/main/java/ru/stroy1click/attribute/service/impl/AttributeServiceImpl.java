@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.stroy1click.attribute.dto.AttributeDto;
 import ru.stroy1click.attribute.entity.Attribute;
-import ru.stroy1click.attribute.exception.NotFoundException;
+import ru.stroy1click.common.exception.NotFoundException;
 import ru.stroy1click.attribute.mapper.AttributeMapper;
 import ru.stroy1click.attribute.repository.AttributeRepository;
 import ru.stroy1click.attribute.service.AttributeService;

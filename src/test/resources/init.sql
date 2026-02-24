@@ -24,15 +24,15 @@ create table if not exists attribute.product_attribute_assignments(
 
 -- ---------- Attributes ----------
 
--- Test: AttributeTests get()
+-- Test: AttributeControllerIT get()
 -- Описание: атрибут для проверки метода получения по id
 INSERT INTO attribute.attributes (title) VALUES('Color');
 
--- Test: AttributeTests update()
+-- Test: AttributeControllerIT update()
 -- Описание: атрибут для проверки метода обновления
 INSERT INTO attribute.attributes (title) VALUES('Size');
 
--- Test: AttributeTests delete()
+-- Test: AttributeControllerIT delete()
 -- Описание: атрибут для проверки метода удаления
 INSERT INTO attribute.attributes (title) VALUES('Material');
 
@@ -61,17 +61,17 @@ SELECT setval('attribute.attribute_options_id_seq', (SELECT MAX(id) FROM attribu
 
 -- ---------- Product Attribute Values ----------
 
--- Test: ProductAttributeAssignmentTests get()
+-- Test: ProductAttributeAssignmentControllerIT get()
 -- Описание: значение атрибута продукта для проверки метода получения по id
 INSERT INTO attribute.product_attribute_assignments (product_id, attribute_option_id) VALUES
     (1, 1);
 
--- Test: ProductAttributeAssignmentTests update()
+-- Test: ProductAttributeAssignmentControllerIT update()
 -- Описание: значение атрибута продукта для проверки метода обновления
 INSERT INTO attribute.product_attribute_assignments (product_id, attribute_option_id) VALUES
     (2, 1);
 
--- Test: ProductAttributeAssignmentTests delete()
+-- Test: ProductAttributeAssignmentControllerIT delete()
 -- Описание: значение атрибута продукта для проверки метода удаления
 INSERT INTO attribute.product_attribute_assignments (product_id, attribute_option_id) VALUES
     (3, 1);

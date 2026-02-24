@@ -7,7 +7,7 @@ import ru.stroy1click.attribute.dto.ProductAttributeValueFilter;
 
 import java.util.List;
 
-public interface ProductAttributeAssignment extends CrudOperations<Integer, ProductAttributeAssignmentDto> {
+public interface ProductAttributeAssignmentService extends CrudOperations<Integer, ProductAttributeAssignmentDto> {
 
     List<ProductAttributeAssignmentDto> getAllByProductId(Integer id);
 
