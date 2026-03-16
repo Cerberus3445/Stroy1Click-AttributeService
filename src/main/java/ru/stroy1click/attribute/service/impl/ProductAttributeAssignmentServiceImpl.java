@@ -138,13 +138,8 @@ public class ProductAttributeAssignmentServiceImpl implements ProductAttributeAs
             @CacheEvict(value = "allProductAttributeAssignments", allEntries = true)
     })
     public void update(Integer id, ProductAttributeAssignmentDto productAttributeAssignmentDto) {
-        this.productAttributeAssignmentRepository.findById(id).ifPresentOrElse(productAttributeValue -> {
-            ru.stroy1click.attribute.entity.ProductAttributeAssignment updatedProductTypeAttributeValue = ru.stroy1click.attribute.entity.ProductAttributeAssignment.builder()
-                    .id(id)
-                    .productId(productAttributeAssignmentDto.getProductId())
-                    .attributeOption(productAttributeValue.getAttributeOption())
-                    .build();
-            this.productAttributeAssignmentRepository.save(updatedProductTypeAttributeValue);
+        this.productAttributeAssignmentRepository.findById(id).ifPresentOrElse(productAttributeAssignment -> {
+            productAttributeAssignment.setProductId(productAttributeAssignmentDto.getProductId());
         }, () -> {
             throw new NotFoundException(
                     this.messageSource.getMessage(
