@@ -130,16 +130,9 @@ public class AttributeOptionServiceImpl implements AttributeOptionService {
     public void update(Integer id, AttributeOptionDto attributeOptionDto) {
         log.info("update {}, {}", id, attributeOptionDto);
 
-        this.attributeOptionRepository.findById(id).ifPresentOrElse(productAttributeValue -> {
-            AttributeOption updatedAttributeOption = AttributeOption.builder()
-                    .id(id)
-                    .value(attributeOptionDto.getValue())
-                    .productTypeId(productAttributeValue.getProductTypeId())
-                    .attribute(productAttributeValue.getAttribute())
-                    .build();
-
-            this.attributeOptionRepository.save(updatedAttributeOption);
-        }, () -> {
+        this.attributeOptionRepository.findById(id).ifPresentOrElse(attributeOption -> {
+            attributeOption.setValue(attributeOptionDto.getValue());
+            }, () -> {
             throw new NotFoundException(
                     this.messageSource.getMessage(
                             "error.product_type_attribute_value.not_found",

@@ -91,12 +91,7 @@ public class AttributeServiceImpl implements AttributeService {
     public void update(Integer id, AttributeDto attributeDto) {
         log.info("update {} {}", id, attributeDto);
         this.attributeRepository.findById(id).ifPresentOrElse(attribute -> {
-            Attribute updatedAttribute = Attribute.builder()
-                    .id(id)
-                    .title(attributeDto.getTitle())
-                    .attributeOptions(attribute.getAttributeOptions())
-                    .build();
-            this.attributeRepository.save(updatedAttribute);
+            attribute.setTitle(attributeDto.getTitle());
         }, () -> {
             throw new NotFoundException(
                     this.messageSource.getMessage(
