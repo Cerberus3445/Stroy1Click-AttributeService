@@ -5,18 +5,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.stroy1click.attribute.dto.AttributeDto;
 import ru.stroy1click.attribute.entity.Attribute;
-import ru.stroy1click.common.exception.NotFoundException;
 import ru.stroy1click.attribute.mapper.AttributeMapper;
 import ru.stroy1click.attribute.repository.AttributeRepository;
 import ru.stroy1click.attribute.service.AttributeService;
+import ru.stroy1click.common.util.ExceptionUtils;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 @Slf4j
@@ -29,22 +27,15 @@ public class AttributeServiceImpl implements AttributeService {
 
     private final AttributeMapper attributeMapper;
 
-    private final MessageSource messageSource;
-
     @Override
     @Cacheable(cacheNames = "attribute", key = "#id")
     public AttributeDto get(Integer id) {
         log.info("get {}", id);
-        return this.attributeMapper.toDto(this.attributeRepository.findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                this.messageSource.getMessage(
-                                        "error.attribute.not_found",
-                                        null,
-                                        Locale.getDefault()
-                                )
-                        )
-                ));
+
+        Attribute attribute = this.attributeRepository.findById(id)
+                .orElseThrow(() -> ExceptionUtils.notFound("error.attribute.not_found", id));
+
+        return this.attributeMapper.toDto(attribute);
     }
 
     @Override
@@ -68,16 +59,10 @@ public class AttributeServiceImpl implements AttributeService {
     })
     public void delete(Integer id) {
         log.info("delete {}", id);
+
         Attribute attribute = this.attributeRepository.findById(id)
-                .orElseThrow(
-                        () -> new NotFoundException(
-                                this.messageSource.getMessage(
-                                        "error.attribute.not_found",
-                                        null,
-                                        Locale.getDefault()
-                                )
-                        )
-                );
+                .orElseThrow(() -> ExceptionUtils.notFound("error.attribute.not_found", id));
+
         this.attributeRepository.delete(attribute);
     }
 
@@ -90,16 +75,11 @@ public class AttributeServiceImpl implements AttributeService {
     })
     public void update(Integer id, AttributeDto attributeDto) {
         log.info("update {} {}", id, attributeDto);
+
         this.attributeRepository.findById(id).ifPresentOrElse(attribute -> {
             attribute.setTitle(attributeDto.getTitle());
         }, () -> {
-            throw new NotFoundException(
-                    this.messageSource.getMessage(
-                            "error.attribute.not_found",
-                            null,
-                            Locale.getDefault()
-                    )
-            );
+            throw ExceptionUtils.notFound("error.attribute.not_found", id);
         });
 
     }
@@ -107,6 +87,8 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     @Cacheable(value = "allAttributes")
     public List<AttributeDto> getAll() {
+        log.info("getAll");
+
         return this.attributeMapper.toDto(
                 this.attributeRepository.findAll()
         );
@@ -115,6 +97,7 @@ public class AttributeServiceImpl implements AttributeService {
     @Override
     public Optional<Attribute> getByTitle(String title) {
         log.info("getByTitle {}", title);
+
         return this.attributeRepository.findByTitle(title);
     }
 }

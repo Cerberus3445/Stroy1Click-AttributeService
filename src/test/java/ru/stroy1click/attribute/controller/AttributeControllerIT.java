@@ -23,7 +23,7 @@ public class AttributeControllerIT {
 
     @Test
     public void get_WhenAttributeExists_ShouldReturnAttribute() {
-        //Arrange
+        //Act
         ResponseEntity<AttributeDto> responseEntity = this.testRestTemplate.getForEntity(
                 "/api/v1/attributes/1", AttributeDto.class
         );
@@ -32,6 +32,21 @@ public class AttributeControllerIT {
         assertTrue(responseEntity.getStatusCode().is2xxSuccessful());
         assertNotNull(responseEntity.getBody());
         assertEquals("Color", responseEntity.getBody().getTitle());
+    }
+
+    @Test
+    public void get_WhenAttributeDoesNotExist_ShouldThrowNotFoundException() {
+        //Arrange
+        int notExistsId = 99999;
+
+        //Act
+        ResponseEntity<ProblemDetail> response =
+                this.testRestTemplate.getForEntity("/api/v1/attributes/" + notExistsId, ProblemDetail.class);
+
+        //Assert
+        assertTrue(response.getStatusCode().is4xxClientError());
+        assertNotNull(response.getBody());
+        assertEquals("Атрибут с id %d не найден".formatted(notExistsId),response.getBody().getDetail());
     }
 
     @Test

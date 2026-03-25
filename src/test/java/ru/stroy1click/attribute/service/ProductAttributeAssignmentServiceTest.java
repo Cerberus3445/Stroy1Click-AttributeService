@@ -3,11 +3,9 @@ package ru.stroy1click.attribute.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.MessageSource;
 import ru.stroy1click.attribute.cache.CacheClear;
 import ru.stroy1click.attribute.dto.AttributeOptionDto;
 import ru.stroy1click.attribute.dto.ProductAttributeAssignmentDto;
@@ -20,7 +18,6 @@ import ru.stroy1click.attribute.service.impl.ProductAttributeAssignmentServiceIm
 import ru.stroy1click.common.exception.NotFoundException;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,9 +31,6 @@ class ProductAttributeAssignmentServiceTest {
 
     @Mock
     private ProductAttributeAssignmentMapper productAttributeAssignmentMapper;
-
-    @Mock
-    private MessageSource messageSource;
 
     @Mock
     private CacheClear cacheClear;
@@ -111,15 +105,13 @@ class ProductAttributeAssignmentServiceTest {
     public void get_WhenProductAttributeAssignmentDoesNotExist_ShouldThrowNotFoundException() {
         //Arrange
         when(this.productAttributeAssignmentRepository.findById(1)).thenReturn(Optional.empty());
-        when(this.messageSource.getMessage(anyString(), any(), any(Locale.class)))
-                .thenReturn("Product attribute value not found");
 
         //Act
         NotFoundException exception = assertThrows(NotFoundException.class,
                 () -> this.productAttributeValueService.get(1));
 
         //Assert
-        assertEquals("Product attribute value not found", exception.getMessage());
+        assertEquals("error.product_attribute_assignment.not_found", exception.getMessage());
         verify(this.productAttributeAssignmentRepository).findById(1);
         verify(this.productAttributeAssignmentMapper, never()).toDto(anyList());
     }
@@ -207,15 +199,13 @@ class ProductAttributeAssignmentServiceTest {
     public void delete_WhenProductAttributeAssignmentDoesNotExist_ShouldThrowNotFoundException() {
         //Arrange
         when(this.productAttributeAssignmentRepository.findById(1)).thenReturn(Optional.empty());
-        when(this.messageSource.getMessage(anyString(), any(), any(Locale.class)))
-                .thenReturn("Product attribute value not found");
 
         //Act
         NotFoundException exception = assertThrows(NotFoundException.class,
                 () -> this.productAttributeValueService.delete(1));
 
         //Assert
-        assertEquals("Product attribute value not found", exception.getMessage());
+        assertEquals("error.product_attribute_assignment.not_found", exception.getMessage());
         verify(this.productAttributeAssignmentRepository).findById(1);
         verify(this.productAttributeAssignmentRepository, never()).delete(any(ProductAttributeAssignment.class));
         verify(this.cacheClear, never()).clearAllProductAttributeValuesByProductId(any());
@@ -233,10 +223,7 @@ class ProductAttributeAssignmentServiceTest {
         this.productAttributeValueService.update(1, updateDto);
 
         //Assert
-        ArgumentCaptor<ProductAttributeAssignment> captor = ArgumentCaptor.forClass(ProductAttributeAssignment.class);
-        verify(this.productAttributeAssignmentRepository).save(captor.capture());
-        ProductAttributeAssignment saved = captor.getValue();
-        assertEquals(555, saved.getProductId());
+        assertEquals(555, productAttributeAssignment.getProductId());
     }
 
     @Test
@@ -244,15 +231,13 @@ class ProductAttributeAssignmentServiceTest {
         //Arrange
         when(this.productAttributeAssignmentRepository.findById(100)).thenReturn(Optional.empty());
         ProductAttributeAssignmentDto updateDto = new ProductAttributeAssignmentDto(100,555,1);
-        when(this.messageSource.getMessage(anyString(), any(), any(Locale.class)))
-                .thenReturn("Product attribute value not found");
 
         //Act
         NotFoundException exception = assertThrows(NotFoundException.class,
                 () -> this.productAttributeValueService.update(100, updateDto));
 
         //Assert
-        assertEquals("Product attribute value not found", exception.getMessage());
+        assertEquals("error.product_attribute_assignment.not_found", exception.getMessage());
         verify(this.productAttributeAssignmentRepository).findById(100);
         verify(this.productAttributeAssignmentRepository, never()).save(any());
         verify(this.cacheClear, never()).clearAllProductAttributeValuesByProductId(any());

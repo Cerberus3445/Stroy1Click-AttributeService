@@ -23,7 +23,7 @@ class AttributeOptionControllerIT {
 
     @Test
     public void get_WhenAttributeOptionExists_ShouldReturnAttributeOption() {
-        //Arrange
+        //Act
         ResponseEntity<AttributeOptionDto> response = this.testRestTemplate
                 .getForEntity("/api/v1/attribute-options/1", AttributeOptionDto.class);
 
@@ -34,10 +34,27 @@ class AttributeOptionControllerIT {
     }
 
     @Test
+    public void get_WhenProductAttributeOptionDoesNotExist_ShouldThrowNotFoundException() {
+        //Arrange
+        int notExistsId = 99999;
+
+        //Act
+        ResponseEntity<ProblemDetail> response =
+                this.testRestTemplate.getForEntity("/api/v1/attribute-options/" + notExistsId, ProblemDetail.class);
+
+        //Assert
+        assertTrue(response.getStatusCode().is4xxClientError());
+        assertNotNull(response.getBody());
+        assertEquals("Значение атрибута с id %d не найдено".formatted(notExistsId),response.getBody().getDetail());
+    }
+
+    @Test
     void get_WhenAttributeOptionDoesNotExist_ShouldThrowNotFoundException() {
+        //Act
         ResponseEntity<ProblemDetail> response = this.testRestTemplate
                 .getForEntity("/api/v1/attribute-options/1000000", ProblemDetail.class);
 
+        //Assert
         assertTrue(response.getStatusCode().is4xxClientError());
         assertNotNull(response.getBody());
         assertEquals("Не найдено", response.getBody().getTitle());
@@ -78,6 +95,7 @@ class AttributeOptionControllerIT {
 
         ResponseEntity<AttributeOptionDto> getResponse = this.testRestTemplate
                 .getForEntity("/api/v1/attribute-options/2", AttributeOptionDto.class);
+        assertNotNull(getResponse.getBody());
         assertEquals("Material", getResponse.getBody().getValue());
     }
 

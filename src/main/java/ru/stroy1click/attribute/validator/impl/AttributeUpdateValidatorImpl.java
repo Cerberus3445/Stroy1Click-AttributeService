@@ -2,15 +2,13 @@ package ru.stroy1click.attribute.validator.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Component;
 import ru.stroy1click.attribute.dto.AttributeDto;
 import ru.stroy1click.attribute.entity.Attribute;
-import ru.stroy1click.common.exception.AlreadyExistsException;
 import ru.stroy1click.attribute.service.AttributeService;
 import ru.stroy1click.attribute.validator.AttributeUpdateValidator;
+import ru.stroy1click.common.util.ExceptionUtils;
 
-import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -21,8 +19,6 @@ public class AttributeUpdateValidatorImpl implements AttributeUpdateValidator {
 
     private final AttributeService attributeService;
 
-    private final MessageSource messageSource;
-
     @Override
     public void validate(AttributeDto dto) {
         log.info("validate {}", dto);
@@ -31,13 +27,7 @@ public class AttributeUpdateValidatorImpl implements AttributeUpdateValidator {
 
         if(foundAttribute.isPresent() && !Objects.equals(dto.getId(), foundAttribute.get().getId())
                 && dto.getTitle().equalsIgnoreCase(foundAttribute.get().getTitle())){
-            throw new AlreadyExistsException(
-                    this.messageSource.getMessage(
-                            "error.attribute.update.validate",
-                            null,
-                            Locale.getDefault()
-                    )
-            );
+            throw ExceptionUtils.alreadyExists("error.attribute.update.validate", null);
         }
     }
 }

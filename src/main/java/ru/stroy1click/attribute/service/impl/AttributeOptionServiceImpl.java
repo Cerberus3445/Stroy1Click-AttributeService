@@ -5,20 +5,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.stroy1click.attribute.cache.CacheClear;
 import ru.stroy1click.attribute.dto.AttributeOptionDto;
 import ru.stroy1click.attribute.entity.AttributeOption;
-import ru.stroy1click.common.exception.NotFoundException;
 import ru.stroy1click.attribute.mapper.AttributeOptionMapper;
 import ru.stroy1click.attribute.repository.AttributeOptionRepository;
-import ru.stroy1click.attribute.service.AttributeService;
 import ru.stroy1click.attribute.service.AttributeOptionService;
+import ru.stroy1click.attribute.service.AttributeService;
+import ru.stroy1click.common.util.ExceptionUtils;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 @Slf4j
@@ -28,8 +26,6 @@ import java.util.Optional;
 public class AttributeOptionServiceImpl implements AttributeOptionService {
 
     private final AttributeOptionRepository attributeOptionRepository;
-
-    private final MessageSource messageSource;
 
     private final AttributeOptionMapper attributeOptionMapper;
 
@@ -42,20 +38,17 @@ public class AttributeOptionServiceImpl implements AttributeOptionService {
     public AttributeOptionDto get(Integer id) {
         log.info("get {}", id);
 
-        return this.attributeOptionMapper.toDto(this.attributeOptionRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(
-                        this.messageSource.getMessage(
-                                "error.product_type_attribute_value.not_found",
-                                null,
-                                Locale.getDefault()
-                        )
-                )
-        ));
+        AttributeOption attributeOption = this.attributeOptionRepository.findById(id)
+                .orElseThrow(() -> ExceptionUtils.notFound("error.attribute_option.not_found", id));
+
+        return this.attributeOptionMapper.toDto(attributeOption);
     }
 
     @Override
     @Cacheable(value = "allAttributeOptions")
     public List<AttributeOptionDto> getAll() {
+        log.info("getAll");
+
         return this.attributeOptionMapper.toDto(
                 this.attributeOptionRepository.findAll()
         );
@@ -106,15 +99,8 @@ public class AttributeOptionServiceImpl implements AttributeOptionService {
     public void delete(Integer id) {
         log.info("delete {}", id);
 
-        AttributeOption attributeOption = this.attributeOptionRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(
-                        this.messageSource.getMessage(
-                                "error.product_type_attribute_value.not_found",
-                                null,
-                                Locale.getDefault()
-                        )
-                )
-        );
+        AttributeOption attributeOption = this.attributeOptionRepository.findById(id)
+                .orElseThrow(() -> ExceptionUtils.notFound("error.attribute_option.not_found", id));
 
         this.cacheClear.clearAllAttributeOptionsByProductTypeId(attributeOption.getProductTypeId());
         this.attributeOptionRepository.delete(attributeOption);
@@ -133,13 +119,7 @@ public class AttributeOptionServiceImpl implements AttributeOptionService {
         this.attributeOptionRepository.findById(id).ifPresentOrElse(attributeOption -> {
             attributeOption.setValue(attributeOptionDto.getValue());
             }, () -> {
-            throw new NotFoundException(
-                    this.messageSource.getMessage(
-                            "error.product_type_attribute_value.not_found",
-                            null,
-                            Locale.getDefault()
-                    )
-            );
+            throw ExceptionUtils.notFound("error.attribute_option.not_found", id);
         });
     }
 }

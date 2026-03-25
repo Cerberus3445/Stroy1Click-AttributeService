@@ -1,6 +1,5 @@
 package ru.stroy1click.attribute.controller;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,14 +24,29 @@ public class ProductAttributeAssignmentControllerIT {
 
     @Test
     public void get_WhenProductAttributeAssignmentExists_ShouldReturnProductAttributeAssignmentExists() {
-        //Arrange
+        //Act
         ResponseEntity<ProductAttributeAssignmentDto> response =
                 this.testRestTemplate.getForEntity("/api/v1/product-attribute-assignments/1", ProductAttributeAssignmentDto.class);
 
         //Assert
-        Assertions.assertTrue(response.getStatusCode().is2xxSuccessful());
-        Assertions.assertNotNull(response.getBody());
-        Assertions.assertEquals(1, response.getBody().getProductId());
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+        assertNotNull(response.getBody());
+        assertEquals(1, response.getBody().getProductId());
+    }
+
+    @Test
+    public void get_WhenProductAttributeAssignmentDoesNotExist_ShouldThrowNotFoundException() {
+        //Arrange
+        int notExistsId = 99999;
+
+        //Act
+        ResponseEntity<ProblemDetail> response =
+                this.testRestTemplate.getForEntity("/api/v1/product-attribute-assignments/" + notExistsId, ProblemDetail.class);
+
+        //Assert
+        assertTrue(response.getStatusCode().is4xxClientError());
+        assertNotNull(response.getBody());
+        assertEquals("Назначение атрибута к продукту с id %d не найдено".formatted(notExistsId),response.getBody().getDetail());
     }
 
     @Test
@@ -45,10 +59,10 @@ public class ProductAttributeAssignmentControllerIT {
                 this.testRestTemplate.postForEntity("/api/v1/product-attribute-assignments", dto, ProductAttributeAssignmentDto.class);
 
         //Assert
-        Assertions.assertTrue(response.getStatusCode().is2xxSuccessful());
-        Assertions.assertNotNull(response.getBody());
-        Assertions.assertNotNull(response.getBody().getId());
-        Assertions.assertNotNull(response.getHeaders().getLocation());
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+        assertNotNull(response.getBody());
+        assertNotNull(response.getBody().getId());
+        assertNotNull(response.getHeaders().getLocation());
     }
 
     @Test
@@ -65,12 +79,12 @@ public class ProductAttributeAssignmentControllerIT {
         );
 
         //Assert
-        Assertions.assertTrue(response.getStatusCode().is2xxSuccessful());
-        Assertions.assertEquals("Значение атрибута продукта обновлено", response.getBody());
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+        assertEquals("Значение атрибута продукта обновлено", response.getBody());
 
         ResponseEntity<ProductAttributeAssignmentDto> getResponse = this.testRestTemplate.getForEntity("/api/v1/product-attribute-assignments/2", ProductAttributeAssignmentDto.class);
-        Assertions.assertNotNull(getResponse.getBody());
-        Assertions.assertEquals(dto.getProductId(), getResponse.getBody().getProductId());
+        assertNotNull(getResponse.getBody());
+        assertEquals(dto.getProductId(), getResponse.getBody().getProductId());
     }
 
     @Test
@@ -84,8 +98,8 @@ public class ProductAttributeAssignmentControllerIT {
         );
 
         //Assert
-        Assertions.assertTrue(response.getStatusCode().is2xxSuccessful());
-        Assertions.assertEquals("Значение атрибута продукта удалено", response.getBody());
+        assertTrue(response.getStatusCode().is2xxSuccessful());
+        assertEquals("Значение атрибута продукта удалено", response.getBody());
 
         ResponseEntity<ProblemDetail> notFoundResponse = this.testRestTemplate.exchange(
                 "/api/v1/product-attribute-assignments/3",

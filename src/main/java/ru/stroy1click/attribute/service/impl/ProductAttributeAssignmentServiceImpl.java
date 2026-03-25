@@ -5,23 +5,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.stroy1click.attribute.cache.CacheClear;
-import ru.stroy1click.attribute.dto.ProductAttributeAssignmentDto;
-import ru.stroy1click.attribute.mapper.ProductAttributeAssignmentMapper;
-import ru.stroy1click.common.exception.NotFoundException;
 import ru.stroy1click.attribute.dto.PageResponse;
+import ru.stroy1click.attribute.dto.ProductAttributeAssignmentDto;
 import ru.stroy1click.attribute.dto.ProductAttributeValueFilter;
+import ru.stroy1click.attribute.entity.ProductAttributeAssignment;
+import ru.stroy1click.attribute.mapper.ProductAttributeAssignmentMapper;
 import ru.stroy1click.attribute.repository.ProductAttributeAssignmentRepository;
-import ru.stroy1click.attribute.service.ProductAttributeAssignmentService;
 import ru.stroy1click.attribute.service.AttributeOptionService;
+import ru.stroy1click.attribute.service.ProductAttributeAssignmentService;
+import ru.stroy1click.common.util.ExceptionUtils;
 
 import java.util.List;
-import java.util.Locale;
 
 @Slf4j
 @Service
@@ -31,9 +30,7 @@ public class ProductAttributeAssignmentServiceImpl implements ProductAttributeAs
 
     private final ProductAttributeAssignmentRepository productAttributeAssignmentRepository;
 
-    private final MessageSource messageSource;
-
-    private final ProductAttributeAssignmentMapper productAttributeAssignment;
+    private final ProductAttributeAssignmentMapper productAttributeAssignmentMapper;
 
     private final CacheClear cacheClear;
 
@@ -44,21 +41,18 @@ public class ProductAttributeAssignmentServiceImpl implements ProductAttributeAs
     public ProductAttributeAssignmentDto get(Integer id) {
         log.info("get {}", id);
 
-         return this.productAttributeAssignment.toDto(this.productAttributeAssignmentRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(
-                        this.messageSource.getMessage(
-                                "error.product_type_attribute_value.not_found",
-                                null,
-                                Locale.getDefault()
-                        )
-                )
-        ));
+        ProductAttributeAssignment productAttributeAssignment = this.productAttributeAssignmentRepository.findById(id)
+                .orElseThrow(() -> ExceptionUtils.notFound("error.product_attribute_assignment.not_found", id));
+
+         return this.productAttributeAssignmentMapper.toDto(productAttributeAssignment);
     }
 
     @Override
     @Cacheable(value = "allProductAttributeAssignments")
     public List<ProductAttributeAssignmentDto> getAll() {
-        return this.productAttributeAssignment.toDto(
+        log.info("getAll");
+
+        return this.productAttributeAssignmentMapper.toDto(
                 this.productAttributeAssignmentRepository.findAll()
         );
     }
@@ -69,16 +63,17 @@ public class ProductAttributeAssignmentServiceImpl implements ProductAttributeAs
         log.info("getAllByProductId {}", id);
 
          return this.productAttributeAssignmentRepository.findByProductId(id).stream()
-                 .map(this.productAttributeAssignment::toDto)
+                 .map(this.productAttributeAssignmentMapper::toDto)
                  .toList();
     }
 
     @Override
     public PageResponse<ProductAttributeAssignmentDto> getProductIdsByAttributes(ProductAttributeValueFilter filter, Pageable pageable) {
+        log.info("getProductIdsByAttributes {}", filter);
         Page<ru.stroy1click.attribute.entity.ProductAttributeAssignment> page = this.productAttributeAssignmentRepository.findProductIdsByAttributes(filter, pageable);
 
         List<ProductAttributeAssignmentDto> productAttributeAssignmentDtos = page.stream()
-                .map(this.productAttributeAssignment::toDto)
+                .map(this.productAttributeAssignmentMapper::toDto)
                 .toList();
 
         return new PageResponse<>(
@@ -101,10 +96,10 @@ public class ProductAttributeAssignmentServiceImpl implements ProductAttributeAs
         this.attributeOptionService.get(productTypeAttributeValueDto.getAttributeOptionId());
 
         ru.stroy1click.attribute.entity.ProductAttributeAssignment createdProductAttributeAssignment = this.productAttributeAssignmentRepository.save(
-                this.productAttributeAssignment.toEntity(productTypeAttributeValueDto)
+                this.productAttributeAssignmentMapper.toEntity(productTypeAttributeValueDto)
         );
 
-        return this.productAttributeAssignment.toDto(createdProductAttributeAssignment);
+        return this.productAttributeAssignmentMapper.toDto(createdProductAttributeAssignment);
     }
 
     @Override
@@ -116,15 +111,8 @@ public class ProductAttributeAssignmentServiceImpl implements ProductAttributeAs
     public void delete(Integer id) {
         log.info("delete {}", id);
 
-        ru.stroy1click.attribute.entity.ProductAttributeAssignment productAttributeAssignment = this.productAttributeAssignmentRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(
-                        this.messageSource.getMessage(
-                                "error.product_type_attribute_value.not_found",
-                                null,
-                                Locale.getDefault()
-                        )
-                )
-        );
+        ProductAttributeAssignment productAttributeAssignment = this.productAttributeAssignmentRepository.findById(id)
+                .orElseThrow(() -> ExceptionUtils.notFound("error.product_attribute_assignment.not_found", id));
 
         this.cacheClear.clearAllProductAttributeValuesByProductId(productAttributeAssignment.getProductId());
         this.productAttributeAssignmentRepository.delete(productAttributeAssignment);
@@ -138,16 +126,12 @@ public class ProductAttributeAssignmentServiceImpl implements ProductAttributeAs
             @CacheEvict(value = "allProductAttributeAssignments", allEntries = true)
     })
     public void update(Integer id, ProductAttributeAssignmentDto productAttributeAssignmentDto) {
+        log.info("update {} {}", id, productAttributeAssignmentDto);
+
         this.productAttributeAssignmentRepository.findById(id).ifPresentOrElse(productAttributeAssignment -> {
             productAttributeAssignment.setProductId(productAttributeAssignmentDto.getProductId());
         }, () -> {
-            throw new NotFoundException(
-                    this.messageSource.getMessage(
-                            "error.product_type_attribute_value.not_found",
-                            null,
-                            Locale.getDefault()
-                    )
-            );
+            throw ExceptionUtils.notFound("error.product_attribute_assignment.not_found", id);
         });
     }
 }

@@ -3,11 +3,9 @@ package ru.stroy1click.attribute.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.MessageSource;
 import ru.stroy1click.attribute.cache.CacheClear;
 import ru.stroy1click.attribute.dto.AttributeOptionDto;
 import ru.stroy1click.attribute.entity.Attribute;
@@ -32,9 +30,6 @@ class AttributeOptionServiceTest {
 
     @Mock
     private AttributeOptionMapper attributeOptionMapper;
-
-    @Mock
-    private MessageSource messageSource;
 
     @Mock
     private CacheClear cacheClear;
@@ -95,15 +90,13 @@ class AttributeOptionServiceTest {
         //Arrange
         when(this.attributeOptionRepository.findById(1))
                 .thenReturn(Optional.empty());
-        when(this.messageSource.getMessage(anyString(), any(), any()))
-                .thenReturn("Not found");
 
         //Act
         NotFoundException exception = assertThrows(NotFoundException.class,
                 () -> this.attributeOptionService.get(1));
 
         //Assert
-        assertEquals("Not found", exception.getMessage());
+        assertEquals("error.attribute_option.not_found", exception.getMessage());
         verify(this.attributeOptionRepository).findById(1);
         verify(this.attributeOptionMapper, never()).toDto(anyList());
     }
@@ -121,7 +114,7 @@ class AttributeOptionServiceTest {
 
         //Assert
         assertEquals(1, result.size());
-        assertEquals(attributeOptionDto, result.get(0));
+        assertEquals(attributeOptionDto, result.getFirst());
         verify(this.attributeOptionRepository).findByProductTypeId(10);
         verify(this.attributeOptionMapper).toDto(attributeOption);
     }
@@ -227,15 +220,13 @@ class AttributeOptionServiceTest {
         //Arrange
         when(this.attributeOptionRepository.findById(1))
                 .thenReturn(Optional.empty());
-        when(this.messageSource.getMessage(anyString(), any(), any()))
-                .thenReturn("Not found");
 
         //Act
         NotFoundException exception = assertThrows(NotFoundException.class,
                 () -> this.attributeOptionService.delete(1));
 
         //Assert
-        assertEquals("Not found", exception.getMessage());
+        assertEquals("error.attribute_option.not_found", exception.getMessage());
         verify(this.attributeOptionRepository).findById(1);
         verify(this.attributeOptionRepository, never()).delete(any());
         verify(this.cacheClear, never()).clearAllAttributeOptionsByProductTypeId(anyInt());
@@ -248,21 +239,16 @@ class AttributeOptionServiceTest {
                 1, 5, 10, "Red"
         );
         when(this.attributeOptionRepository.findById(1))
-                .thenReturn(Optional.of(this.attributeOption));
+                .thenReturn(Optional.of(attributeOption));
 
         //Act
         this.attributeOptionService.update(1, updateDto);
 
         //Assert
         verify(this.attributeOptionRepository).findById(1);
-        ArgumentCaptor<AttributeOption> captor =
-                ArgumentCaptor.forClass(AttributeOption.class);
-        verify(this.attributeOptionRepository).save(captor.capture());
 
-        AttributeOption saved = captor.getValue();
-        assertEquals("Red", saved.getValue());
-        assertEquals(this.attributeOption.getProductTypeId(), saved.getProductTypeId());
-        assertEquals(this.attributeOption.getAttribute(), saved.getAttribute());
+        assertEquals(10, attributeOption.getProductTypeId());
+        assertEquals("Red", attributeOption.getValue());
     }
 
     @Test
@@ -273,15 +259,13 @@ class AttributeOptionServiceTest {
         );
         when(this.attributeOptionRepository.findById(1))
                 .thenReturn(Optional.empty());
-        when(this.messageSource.getMessage(anyString(), any(), any()))
-                .thenReturn("Not found");
 
         //Act
         NotFoundException exception = assertThrows(NotFoundException.class,
                 () -> this.attributeOptionService.update(1, updateDto));
 
         //Assert
-        assertEquals("Not found", exception.getMessage());
+        assertEquals("error.attribute_option.not_found", exception.getMessage());
         verify(this.attributeOptionRepository, never()).save(any());
         verify(this.cacheClear, never()).clearAllAttributeOptionsByProductTypeId(anyInt());
     }
