@@ -70,7 +70,8 @@ public class ProductAttributeAssignmentServiceImpl implements ProductAttributeAs
     @Override
     public PageResponse<ProductAttributeAssignmentDto> getProductIdsByAttributes(ProductAttributeValueFilter filter, Pageable pageable) {
         log.info("getProductIdsByAttributes {}", filter);
-        Page<ru.stroy1click.attribute.entity.ProductAttributeAssignment> page = this.productAttributeAssignmentRepository.findProductIdsByAttributes(filter, pageable);
+
+        Page<ProductAttributeAssignment> page = this.productAttributeAssignmentRepository.findProductIdsByAttributes(filter, pageable);
 
         List<ProductAttributeAssignmentDto> productAttributeAssignmentDtos = page.stream()
                 .map(this.productAttributeAssignmentMapper::toDto)
