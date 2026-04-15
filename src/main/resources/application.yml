@@ -30,6 +30,9 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 900MB
+  threads:
+    virtual:
+      enabled: true
 
 redisson:
   host: localhost
